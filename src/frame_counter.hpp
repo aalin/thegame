@@ -2,13 +2,15 @@
 #define FRAME_COUNTER_HPP
 
 #include <SDL/SDL.h>
+#include <iostream>
 
 class FrameCounter
 {
 	public:
 		FrameCounter()
 		{
-			resetCounts();
+			_start_time = 0;
+			_frames = 0;
 		}
 
 		void update()
@@ -20,19 +22,14 @@ class FrameCounter
 				float seconds = (end_time - _start_time) / 1000.0;
 				float fps = _frames / seconds;
 				std::cout << _frames << " frames in " << seconds << " seconds: " << fps << " fps" << std::endl;
-				resetCounts();
+				_start_time = end_time;
+				_frames = 0;
 			}
 		}
 
 	protected:
 		int _start_time;
 		int _frames;
-
-		void resetCounts()
-		{
-			_start_time = SDL_GetTicks();
-			_frames = 0;
-		}
 };
 
 #endif
