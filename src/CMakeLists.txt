@@ -11,6 +11,7 @@ include_directories(${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR})
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")
  
 set(SHARED_SOURCES 
+	engine
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})
