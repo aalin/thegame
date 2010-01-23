@@ -58,7 +58,8 @@ void Engine::draw()
 	glShadeModel(GL_SMOOTH);
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
-	glBlendFunc(GL_SRC_ALPHA,GL_ONE);
+
+	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 
 	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
 

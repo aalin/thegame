@@ -6,8 +6,21 @@
 
 const float PI = 3.14159265358979;
 
-CubeScene::CubeScene()
-{ }
+CubeScene::CubeScene() : _heightmap(128, 128)
+{
+	for(int i = 0; i < 1280; i++)
+	{
+		float r = i / 20.0;
+		for(int j = 0; j < 360; j++)
+		{
+			float x = 64 + std::cos(j / 180.0 * PI) * r;
+			float y = 64 + std::sin(j / 180.0 * PI) * r;
+			float z = std::sin(i / 100.0 * PI);
+			if(x < 128 && y < 128 && x > 0 && y > 0)
+				_heightmap.setHeightAt(x, y, z);
+		}
+	}
+}
 
 void CubeScene::update()
 { }
@@ -15,41 +28,16 @@ void CubeScene::update()
 void drawCamera()
 {
 	float ticks = SDL_GetTicks() / 10.0;
-	float distance = 40; //15.0 + std::sin(ticks / 180.0 * PI) * 5.0;
+	float distance = 100;
 	float x = std::cos(ticks / 180.0 * PI) * distance;
-	float y = std::sin(ticks / 320.0 * PI) * distance;
-	float z = std::sin(ticks / 180.0 * PI) * distance;
+	float y = std::sin(ticks / 180.0 * PI) * distance;
+	float z = distance/3*2 + std::sin(ticks / 320.0 * PI) * distance / 2;
 
 	gluLookAt(
-		x, y, z,
-		0.0, 0.0, 0.0,
-		0.0, 1.0, 0.0
+		x+64, y+64, z,
+		64.0, 64.0, 0.0,
+		0.0, 0.0, 1.0
 	);
-}
-
-void drawThing()
-{
-	glLineWidth(2);
-
-	glBegin(GL_LINE_STRIP);
-		const int total = 2000;
-		for(int i = 0; i < total; i++)
-		{
-			float a = i * 1.0 / total;
-			glColor4f(
-				std::sin((a + 0 / 3.0) * 2 * PI) / 2.0 + 0.5,
-				std::sin((a + 1 / 3.0) * 2 * PI) / 2.0 + 0.5,
-				std::sin((a + 2 / 3.0) * 2 * PI) / 2.0 + 0.5,
-				std::sin((1.0 - a) * PI)
-			);
-			
-			float ysad = (SDL_GetTicks() / 1000.0);
-			float x = std::cos(a * 100 * PI) * i / 100.0;
-			float y = std::sin(a * ysad * PI) * 10;
-			float z = std::sin(a * 100 * PI) * i / 100.0;
-			glVertex3f(x, y, z);
-		}
-	glEnd();
 }
 
 void CubeScene::draw()
@@ -62,5 +50,5 @@ void CubeScene::draw()
 	glLoadIdentity();
 
 	drawCamera();
-	drawThing();
+	_heightmap.draw();
 }

@@ -2,6 +2,7 @@
 #define CUBE_SCENE_HPP
 
 #include "opengl.hpp"
+#include "heightmap.hpp"
 
 class CubeScene
 {
@@ -9,6 +10,9 @@ class CubeScene
 		CubeScene();
 		void update();
 		void draw();
+
+	private:
+		Heightmap _heightmap;
 };
 
 #endif
