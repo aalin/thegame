@@ -14,6 +14,7 @@ set(SHARED_SOURCES
 	engine
 	heightmap
 	cube_scene
+	shader_program
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})
