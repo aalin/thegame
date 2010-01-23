@@ -22,7 +22,42 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 void Heightmap::drawVertex(unsigned int x, unsigned int y)
 {
 	colorAt(x, y).draw();
-	glVertex3f(x, y, heightAt(x, y));
+	Vector3 normal(normalAt(x, y));
+	glNormal3f(normal.x, normal.y, normal.z);
+	Vector3 pos(positionAt(x, y));
+	glVertex3f(pos.x, pos.y, pos.z);
+}
+
+Vector3 triangleNormal(const Vector3& a, const Vector3& b, const Vector3& c)
+{
+	Vector3 edge1 = b - a;
+	Vector3 edge2 = c - a;
+	return edge1.crossProduct(edge2);
+}
+
+void Heightmap::addToNormal(Vector3& normal, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+{
+	if(x0 >= _width || x1 >= _width || x2 >= _width)
+		return;
+	if(y0 >= _height || y1 >= _height || y2 >= _height)
+		return;
+	normal += triangleNormal(positionAt(x0, y0),
+	                         positionAt(x1, y1),
+	                         positionAt(x2, y2));
+}
+
+// I have no idea if I'm doing this right. :D
+// I'm trying to do this: http://www.gamedev.net/community/forums/topic.asp?topic_id=78633
+Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
+{
+	Vector3 normal;
+	addToNormal(normal, x, y, x-1, y+0, x-1, y+1);
+	addToNormal(normal, x, y, x-1, y+1, x+0, y+1);
+	addToNormal(normal, x, y, x+0, y+1, x+1, y+0);
+	addToNormal(normal, x, y, x+1, y+0, x+1, y-1);
+	addToNormal(normal, x, y, x+1, y-1, x+0, y-1);
+	addToNormal(normal, x, y, x+0, y-1, x-1, y+0);
+	return normal.normalize();
 }
 
 void Heightmap::draw()
