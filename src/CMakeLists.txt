@@ -8,7 +8,7 @@ find_package(Boost)
 
 include_directories(${OPENGL_INCLUDE_DIR} ${SDL_INCLUDE_DIR})
  
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb -Wall -Wextra")
  
 set(SHARED_SOURCES 
 	engine
