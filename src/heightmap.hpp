@@ -32,6 +32,8 @@ class Heightmap
 		std::vector<float> _heights;
 		std::vector<Color> _colors;
 
+		void drawVertex(unsigned int x, unsigned int y);
+
 		unsigned int posToIndex(unsigned int x, unsigned int y) const
 		{
 			return y * _width + x;

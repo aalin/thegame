@@ -19,23 +19,39 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 	}
 }
 
+void Heightmap::drawVertex(unsigned int x, unsigned int y)
+{
+	colorAt(x, y).draw();
+	glVertex3f(x, y, heightAt(x, y));
+}
+
 void Heightmap::draw()
 {
+	glBegin(GL_TRIANGLE_STRIP);
+
 	for(int y = 0; y < _height - 1; y++)
 	{
-		glBegin(GL_QUADS);
-		for(int x = 0; x < _width - 1; x++)
+		if(y % 2 == 0) // Even, left to right
 		{
-			colorAt(x, y).draw();
-			glVertex3f(x, y, heightAt(x, y));
-			colorAt(x+1, y).draw();
-			glVertex3f(x+1, y, heightAt(x+1, y));
-			colorAt(x+1, y+1).draw();
-			glVertex3f(x+1, y+1, heightAt(x+1, y+1));
-			colorAt(x, y+1).draw();
-			glVertex3f(x, y+1, heightAt(x, y+1));
+			for(int x = 0; x < _width - 1; x++)
+			{
+				drawVertex(x, y);
+				drawVertex(x+1, y);
+				drawVertex(x, y+1);
+				drawVertex(x+1, y+1);
+			}
 		}
-		glEnd();
+		else // Odd, right to left
+		{
+			for(int x = _width - 1; x > 0; x--)
+			{
+				drawVertex(x, y);
+				drawVertex(x-1, y);
+				drawVertex(x, y+1);
+				drawVertex(x-1, y+1);
+			}
+		}
 	}
+	glEnd();
 }
 
