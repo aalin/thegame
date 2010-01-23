@@ -3,6 +3,7 @@
 
 #include <SDL/SDL.h>
 #include "frame_counter.hpp"
+#include "cube_scene.hpp"
 
 class Engine
 {
@@ -19,6 +20,7 @@ class Engine
 
 	protected:
 		FrameCounter _frame_counter;
+		CubeScene _scene;
 		bool _running;
 		SDL_Surface* _surface;
 };

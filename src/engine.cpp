@@ -47,11 +47,20 @@ void Engine::handleInput()
 
 void Engine::update()
 {
+	_scene.update();
 }
 
 void Engine::draw()
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	glDepthFunc(GL_LEQUAL);
+	glEnable(GL_DEPTH_TEST);
+	glShadeModel(GL_SMOOTH);
+
+	glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+
+	_scene.draw();
+
 	_frame_counter.update();
 	SDL_GL_SwapBuffers();
 }

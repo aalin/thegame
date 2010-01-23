@@ -13,6 +13,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -ggdb")
 set(SHARED_SOURCES 
 	engine
 	heightmap
+	cube_scene
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})
