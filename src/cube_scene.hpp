@@ -9,9 +9,6 @@ class CubeScene
 		CubeScene();
 		void update();
 		void draw();
-
-	private:
-		unsigned int _i;
 };
 
 #endif
