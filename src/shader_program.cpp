@@ -76,6 +76,7 @@ ShaderProgram::~ShaderProgram()
 	BOOST_FOREACH(Shader* shader, _shaders)
 	{
 		glAttachShader(_id, shader->getId());
+		delete shader;
 	}
 
 	glDeleteProgram(_id);
