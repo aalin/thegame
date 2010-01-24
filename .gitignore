@@ -2,4 +2,5 @@ CMakeCache.txt
 CMakeFiles
 *.cmake
 src/thegame
+src/test
 Makefile

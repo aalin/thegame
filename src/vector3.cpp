@@ -30,9 +30,9 @@ Vector3& Vector3::normalize()
 	if(magnitude < std::numeric_limits<float>::epsilon())
 		return *this;
 
-	x /= magnitude;
-	y /= magnitude;
-	z /= magnitude;
+	x /= std::sqrt(magnitude);
+	y /= std::sqrt(magnitude);
+	z /= std::sqrt(magnitude);
 
 	return *this;
 }
@@ -41,3 +41,9 @@ Vector3 Vector3::getNormalized() const
 {
 	return Vector3(*this).normalize();
 }
+
+std::ostream& operator<<(std::ostream& o, const Vector3& v)
+{
+	return o << "Vector3(" << v.x << ", " << v.y << ", " << v.z << ")";
+}
+
