@@ -48,7 +48,7 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 // I'm trying to do this: http://www.gamedev.net/community/forums/topic.asp?topic_id=78633
 Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
 {
-	return surfaceNormal(x, y, x, y+1, x+1, y-1);
+	//return surfaceNormal(x, y, x, y+1, x+1, y);
 	Vector3 normal;
 	normal += surfaceNormal(x, y, x-1, y+0, x-1, y+1);
 	normal += surfaceNormal(x, y, x-1, y+1, x+0, y+1);
@@ -57,10 +57,6 @@ Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
 	normal += surfaceNormal(x, y, x+1, y-1, x+0, y-1);
 	normal += surfaceNormal(x, y, x+0, y-1, x-1, y+0);
 	return normal.normalize();
-}
-
-void debugNormals()
-{
 }
 
 void Heightmap::draw()
@@ -93,9 +89,9 @@ void Heightmap::draw()
 
 	// Debug normals
 	glDisable(GL_LIGHTING);
-	for(size_t y = 0; y < _height - 1; y+=2)
+	for(size_t y = 0; y < _height - 1; y++)
 	{
-		for(size_t x = 0; x < _width - 1; x+=2)
+		for(size_t x = 0; x < _width - 1; x++)
 		{
 			Vector3 p1(positionAt(x, y));
 			Vector3 p2(p1 + normalAt(x, y));
