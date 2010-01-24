@@ -14,7 +14,7 @@ CubeScene::CubeScene() : _heightmap(128, 128)
 		for(int j = 0; j < 360*2; j++)
 		{
 			float x = 64 + std::cos(j / 180.0 / 2 * PI) * r;
-			float y = 64 + std::sin(j / 180.0 / 2 * PI) * r*0.8;
+			float y = 64 + std::sin(j / 180.0 / 2 * PI) * r * 0.8;
 			float z = std::sin(i / 100.0 * PI) * 2;
 			if(x < 128 && y < 128 && x > 0 && y > 0)
 				_heightmap.setHeightAt(x, y, z);

@@ -98,7 +98,7 @@ void Heightmap::draw()
 		for(size_t x = 0; x < _width - 1; x+=2)
 		{
 			Vector3 p1(positionAt(x, y));
-			Vector3 p2(p1 - normalAt(x, y)); // should be p1 + normalAt... I think.
+			Vector3 p2(p1 + normalAt(x, y));
 
 			glBegin(GL_LINES);
 			glColor3f(0.7, 1.0, 0.7);

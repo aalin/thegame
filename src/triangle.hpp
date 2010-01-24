@@ -13,8 +13,8 @@ struct Triangle
 
 	Vector3 getNormal()
 	{
-		Vector3 edge1 = b - a;
-		Vector3 edge2 = c - a;
+		Vector3 edge1 = c - a;
+		Vector3 edge2 = b - a;
 		return edge1.crossProduct(edge2).normalize();
 	}
 
