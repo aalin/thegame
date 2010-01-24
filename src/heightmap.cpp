@@ -1,4 +1,5 @@
 #include "heightmap.hpp"
+#include "triangle.hpp"
 #include "opengl.hpp"
 #include <iostream>
 
@@ -7,9 +8,9 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 {
 	_heights.resize(_width * _height);
 	_colors.resize(_width * _height);
-	for(int y = 0; y < _height; y++)
+	for(size_t y = 0; y < _height; y++)
 	{
-		for(int x = 0; x < _width; x++)
+		for(size_t x = 0; x < _width; x++)
 		{
 			colorAt(x, y) = Color(
 				x * 1.0 / _width,
@@ -29,22 +30,15 @@ void Heightmap::drawVertex(unsigned int x, unsigned int y)
 	glVertex3f(pos.x, pos.y, pos.z);
 }
 
-Vector3 triangleNormal(const Vector3& a, const Vector3& b, const Vector3& c)
-{
-	Vector3 edge1 = b - a;
-	Vector3 edge2 = c - a;
-	return edge1.crossProduct(edge2);
-}
-
 void Heightmap::addToNormal(Vector3& normal, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
 {
 	if(x0 >= _width || x1 >= _width || x2 >= _width)
 		return;
 	if(y0 >= _height || y1 >= _height || y2 >= _height)
 		return;
-	normal += triangleNormal(positionAt(x0, y0),
-	                         positionAt(x1, y1),
-	                         positionAt(x2, y2));
+	normal += Triangle(positionAt(x0, y0),
+                       positionAt(x1, y1),
+                       positionAt(x2, y2)).getNormal();
 }
 
 // I have no idea if I'm doing this right. :D
@@ -68,11 +62,11 @@ void debugNormals()
 void Heightmap::draw()
 {
 	glBegin(GL_TRIANGLE_STRIP);
-	for(int y = 0; y < _height - 1; y++)
+	for(size_t y = 0; y < _height - 1; y++)
 	{
 		if(y % 2 == 0) // Even, left to right
 		{
-			for(int x = 0; x < _width - 1; x++)
+			for(size_t x = 0; x < _width - 1; x++)
 			{
 				drawVertex(x, y);
 				drawVertex(x+1, y);
@@ -82,7 +76,7 @@ void Heightmap::draw()
 		}
 		else // Odd, right to left
 		{
-			for(int x = _width - 1; x > 0; x--)
+			for(size_t x = _width - 1; x > 0; x--)
 			{
 				drawVertex(x, y);
 				drawVertex(x-1, y);
@@ -95,9 +89,9 @@ void Heightmap::draw()
 
 	// Debug normals
 	glDisable(GL_LIGHTING);
-	for(int y = 0; y < _height - 1; y++)
+	for(size_t y = 0; y < _height - 1; y++)
 	{
-		for(int x = 0; x < _width - 1; x++)
+		for(size_t x = 0; x < _width - 1; x++)
 		{
 			glColor3f(1.0, 1.0, 1.0);
 			Vector3 pos(positionAt(x, y));

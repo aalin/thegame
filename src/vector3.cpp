@@ -17,7 +17,7 @@ Vector3 Vector3::crossProduct(const Vector3& v) const
 	return Vector3(
 		y * v.z - z * v.y,
 		z * v.x - x * v.z,
-		x * v.y - y - v.x
+		x * v.y - y * v.x
 	);
 }
 
@@ -30,7 +30,7 @@ float Vector3::dotProduct(const Vector3& v) const
 
 float Vector3::getMagnitude() const
 {
-	return std::fabs(dotProduct(*this));
+	return std::sqrt(std::fabs(dotProduct(*this)));
 }
 
 Vector3& Vector3::normalize()
@@ -40,9 +40,9 @@ Vector3& Vector3::normalize()
 	if(magnitude < std::numeric_limits<float>::epsilon())
 		return *this;
 
-	x /= std::sqrt(magnitude);
-	y /= std::sqrt(magnitude);
-	z /= std::sqrt(magnitude);
+	x /= magnitude;
+	y /= magnitude;
+	z /= magnitude;
 
 	return *this;
 }
