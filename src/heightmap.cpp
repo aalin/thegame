@@ -40,7 +40,7 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 	return Triangle(
 		positionAt(x0, y0),
 		positionAt(x1, y1),
-	    positionAt(x2, y2)
+		positionAt(x2, y2)
 	).getNormal();
 }
 
