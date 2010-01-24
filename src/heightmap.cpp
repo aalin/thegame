@@ -89,9 +89,9 @@ void Heightmap::draw()
 
 	// Debug normals
 	glDisable(GL_LIGHTING);
-	for(size_t y = 0; y < _height - 1; y++)
+	for(size_t y = 0; y < _height - 1; y+=2)
 	{
-		for(size_t x = 0; x < _width - 1; x++)
+		for(size_t x = 0; x < _width - 1; x+=2)
 		{
 			glColor3f(1.0, 1.0, 1.0);
 			Vector3 pos(positionAt(x, y));
@@ -99,7 +99,7 @@ void Heightmap::draw()
 
 			glBegin(GL_LINES);
 			glVertex3f(pos.x, pos.y, pos.z);
-			glVertex3f(pos.x + normal.x, pos.y + normal.y, pos.z + normal.z * 4);
+			glVertex3f(pos.x + normal.x, pos.y + normal.y, pos.z - normal.z);
 			glEnd();
 		}
 	}

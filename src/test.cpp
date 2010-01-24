@@ -21,20 +21,13 @@ void testVector3()
 
 void testTriangle()
 {
-
-	std::cout << Triangle(
-			Vector3(0, 0, 0),
-			Vector3(1, 1, 0),
-			Vector3(-1, 1, 0)).getNormal() << std::endl;
-	/*
 	BOOST_ASSERT(
 		Triangle(
 			Vector3(0, 0, 0),
 			Vector3(1, 1, 0),
 			Vector3(-1, 1, 0)
-		).getNormal() == Vector3(0, -1, 0)
+		).getNormal() == Vector3(0, 0, 1)
 	);
-	*/
 }
 
 void testNormals()
