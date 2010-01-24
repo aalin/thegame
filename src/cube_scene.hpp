@@ -13,6 +13,7 @@ class CubeScene
 
 	private:
 		Heightmap _heightmap;
+		void drawLights();
 };
 
 #endif

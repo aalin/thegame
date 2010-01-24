@@ -1,5 +1,6 @@
 #include "heightmap.hpp"
 #include "opengl.hpp"
+#include <iostream>
 
 Heightmap::Heightmap(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
@@ -60,10 +61,13 @@ Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
 	return normal.normalize();
 }
 
+void debugNormals()
+{
+}
+
 void Heightmap::draw()
 {
 	glBegin(GL_TRIANGLE_STRIP);
-
 	for(int y = 0; y < _height - 1; y++)
 	{
 		if(y % 2 == 0) // Even, left to right
@@ -88,5 +92,23 @@ void Heightmap::draw()
 		}
 	}
 	glEnd();
+
+	// Debug normals
+	glDisable(GL_LIGHTING);
+	for(int y = 0; y < _height - 1; y++)
+	{
+		for(int x = 0; x < _width - 1; x++)
+		{
+			glColor3f(1.0, 1.0, 1.0);
+			Vector3 pos(positionAt(x, y));
+			Vector3 normal(normalAt(x, y));
+
+			glBegin(GL_LINES);
+			glVertex3f(pos.x, pos.y, pos.z);
+			glVertex3f(pos.x + normal.x, pos.y + normal.y, pos.z + normal.z * 4);
+			glEnd();
+		}
+	}
+	glEnable(GL_LIGHTING);
 }
 

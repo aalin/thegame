@@ -14,8 +14,8 @@ CubeScene::CubeScene() : _heightmap(128, 128)
 		for(int j = 0; j < 360*2; j++)
 		{
 			float x = 64 + std::cos(j / 180.0 / 2 * PI) * r;
-			float y = 64 + std::sin(j / 180.0 / 2 * PI) * r;
-			float z = std::sin(i / 100.0 * PI);
+			float y = 64 + std::sin(j / 180.0 / 2 * PI) * r*0.8;
+			float z = std::sin(i / 100.0 * PI) * 2;
 			if(x < 128 && y < 128 && x > 0 && y > 0)
 				_heightmap.setHeightAt(x, y, z);
 		}
@@ -40,6 +40,31 @@ void drawCamera()
 	);
 }
 
+void CubeScene::drawLights()
+{
+	float ticks = SDL_GetTicks() / 30.0;
+	float r = std::sin(ticks / 360.0 * PI) * 50 + 25;
+	float x = 64 + std::cos(ticks / 360.0 * PI) * r;
+	float y = 64 + std::sin(ticks / 360.0 * PI) * r;
+	float z = 8.0;
+	GLfloat LightAmbient[]= { 0.5f, 0.5f, 0.5f, 1.0f };
+	GLfloat LightDiffuse[]= { 1.0f, 1.0f, 1.0f, 1.0f };
+	GLfloat LightPosition[]= { x, y, z, 1.0f };
+
+
+	glLightfv(GL_LIGHT1, GL_AMBIENT, LightAmbient);
+	glLightfv(GL_LIGHT1, GL_DIFFUSE, LightDiffuse);
+	glLightfv(GL_LIGHT1, GL_POSITION,LightPosition);
+	glEnable(GL_LIGHT1);
+
+	glDisable(GL_LIGHTING);
+	glPointSize(10.0);
+	glBegin(GL_POINTS);
+		glVertex3f(x, y, z);
+	glEnd();
+	glEnable(GL_LIGHTING);
+}
+
 void CubeScene::draw()
 {
 	glMatrixMode(GL_PROJECTION);
@@ -50,5 +75,7 @@ void CubeScene::draw()
 	glLoadIdentity();
 
 	drawCamera();
+
+	drawLights();
 	_heightmap.draw();
 }
