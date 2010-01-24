@@ -33,6 +33,7 @@ struct Vector3
 	Vector3 operator-(const Vector3& v) const { return Vector3(*this) -= v; }
 	Vector3 operator+(const Vector3& v) const { return Vector3(*this) += v; }
 		
+	bool operator==(const Vector3& v) const;
 
 	Vector3 crossProduct(const Vector3& v) const;
 	float dotProduct(const Vector3& v) const;

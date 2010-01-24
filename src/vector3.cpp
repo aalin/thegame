@@ -2,6 +2,16 @@
 #include <cmath>
 #include <limits>
 
+bool compareFloats(float a, float b)
+{
+	return std::fabs(a - b) < std::numeric_limits<float>::epsilon();
+}
+
+bool Vector3::operator==(const Vector3& v) const
+{
+	return compareFloats(x, v.x) && compareFloats(y, v.y) && compareFloats(z, v.z);
+}
+
 Vector3 Vector3::crossProduct(const Vector3& v) const
 {
 	return Vector3(
