@@ -30,15 +30,18 @@ void Heightmap::drawVertex(unsigned int x, unsigned int y)
 	glVertex3f(pos.x, pos.y, pos.z);
 }
 
-void Heightmap::addToNormal(Vector3& normal, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
 {
 	if(x0 >= _width || x1 >= _width || x2 >= _width)
-		return;
+		return Vector3(0.0, 0.0, 0.0);
 	if(y0 >= _height || y1 >= _height || y2 >= _height)
-		return;
-	normal += Triangle(positionAt(x0, y0),
-                       positionAt(x1, y1),
-                       positionAt(x2, y2)).getNormal();
+		return Vector3(0.0, 0.0, 0.0);
+
+	return Triangle(
+		positionAt(x0, y0),
+		positionAt(x1, y1),
+	    positionAt(x2, y2)
+	).getNormal();
 }
 
 // I have no idea if I'm doing this right. :D
@@ -46,12 +49,12 @@ void Heightmap::addToNormal(Vector3& normal, unsigned int x0, unsigned int y0, u
 Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
 {
 	Vector3 normal;
-	addToNormal(normal, x, y, x-1, y+0, x-1, y+1);
-	addToNormal(normal, x, y, x-1, y+1, x+0, y+1);
-	addToNormal(normal, x, y, x+0, y+1, x+1, y+0);
-	addToNormal(normal, x, y, x+1, y+0, x+1, y-1);
-	addToNormal(normal, x, y, x+1, y-1, x+0, y-1);
-	addToNormal(normal, x, y, x+0, y-1, x-1, y+0);
+	normal += surfaceNormal(x, y, x-1, y+0, x-1, y+1);
+	normal += surfaceNormal(x, y, x-1, y+1, x+0, y+1);
+	normal += surfaceNormal(x, y, x+0, y+1, x+1, y+0);
+	normal += surfaceNormal(x, y, x+1, y+0, x+1, y-1);
+	normal += surfaceNormal(x, y, x+1, y-1, x+0, y-1);
+	normal += surfaceNormal(x, y, x+0, y-1, x-1, y+0);
 	return normal.normalize();
 }
 
