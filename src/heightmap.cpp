@@ -37,55 +37,34 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 	if(y0 >= _height || y1 >= _height || y2 >= _height)
 		return Vector3(0.0, 0.0, 0.0);
 
-	return Triangle(
-		positionAt(x0, y0),
-		positionAt(x1, y1),
-		positionAt(x2, y2)
-	).getNormal();
+	Vector3 v0 = positionAt(x0, y0);
+	Vector3 v1 = positionAt(x1, y1);
+	Vector3 v2 = positionAt(x2, y2);
+
+	Vector3 n0 = Triangle(v0, v1, v2).getNormal();
+	Vector3 n1 = Triangle(v2, v0, v1).getNormal();
+	Vector3 n2 = Triangle(v1, v2, v0).getNormal();
+
+	return (n0 + n1 + n2).normalize();
 }
 
-// I have no idea if I'm doing this right. :D
-// I'm trying to do this: http://www.gamedev.net/community/forums/topic.asp?topic_id=78633
 Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
 {
-	//return surfaceNormal(x, y, x, y+1, x+1, y);
-	Vector3 normal;
-	normal += surfaceNormal(x, y, x-1, y+0, x-1, y+1);
-	normal += surfaceNormal(x, y, x-1, y+1, x+0, y+1);
-	normal += surfaceNormal(x, y, x+0, y+1, x+1, y+0);
-	normal += surfaceNormal(x, y, x+1, y+0, x+1, y-1);
-	normal += surfaceNormal(x, y, x+1, y-1, x+0, y-1);
-	normal += surfaceNormal(x, y, x+0, y-1, x-1, y+0);
-	return normal.normalize();
+	return surfaceNormal(x, y, x, y+1, x+1, y);
 }
 
 void Heightmap::draw()
 {
-	glBegin(GL_TRIANGLE_STRIP);
 	for(size_t y = 0; y < _height - 1; y++)
 	{
-		if(y % 2 == 0) // Even, left to right
+		glBegin(GL_TRIANGLE_STRIP);
+		for(size_t x = 0; x < _width - 1; x++)
 		{
-			for(size_t x = 0; x < _width - 1; x++)
-			{
-				drawVertex(x, y);
-				drawVertex(x+1, y);
-				drawVertex(x, y+1);
-				drawVertex(x+1, y+1);
-			}
+			drawVertex(x, y);
+			drawVertex(x, y+1);
 		}
-		else // Odd, right to left
-		{
-			for(size_t x = _width - 1; x > 0; x--)
-			{
-				drawVertex(x, y);
-				drawVertex(x-1, y);
-				drawVertex(x, y+1);
-				drawVertex(x-1, y+1);
-			}
-		}
+		glEnd();
 	}
-	glEnd();
 
 	// Debug normals
 	glDisable(GL_LIGHTING);

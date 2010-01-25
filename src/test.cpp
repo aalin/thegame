@@ -26,8 +26,32 @@ void testTriangle()
 			Vector3(0, 0, 0),
 			Vector3(1, 1, 0),
 			Vector3(-1, 1, 0)
-		).getNormal() == Vector3(0, 0, 1)
+		).getNormal() == Vector3(0, 0, -1)
 	);
+
+	Vector3 v1(0, 0, 0);
+	Vector3 v2(1, 1, 0);
+	Vector3 v3(-1, 1, 0);
+
+	Vector3 n1 = Triangle(
+		v1,
+		v2,
+		v3
+	).getNormal();
+
+	Vector3 n2 = Triangle(
+		v3,
+		v1,
+		v2
+	).getNormal();
+
+	Vector3 n3 = Triangle(
+		v2,
+		v3,
+		v1
+	).getNormal();
+
+	std::cout << (n1 + n2 + n3).normalize() << std::endl;
 }
 
 void testNormals()
