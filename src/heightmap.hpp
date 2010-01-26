@@ -39,7 +39,7 @@ class Heightmap
 		std::vector<Color> _colors;
 
 		void drawVertex(unsigned int x, unsigned int y);
-		Vector3 normalAt(unsigned int x, unsigned int y);
+		Vector3 vertexNormalAt(unsigned int x, unsigned int y);
 
 		unsigned int posToIndex(unsigned int x, unsigned int y) const
 		{

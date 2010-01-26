@@ -24,7 +24,7 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 void Heightmap::drawVertex(unsigned int x, unsigned int y)
 {
 	colorAt(x, y).draw();
-	Vector3 normal(normalAt(x, y));
+	Vector3 normal(vertexNormalAt(x, y));
 	glNormal3f(normal.x, normal.y, normal.z);
 	Vector3 pos(positionAt(x, y));
 	glVertex3f(pos.x, pos.y, pos.z);
@@ -48,9 +48,18 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 	return (n0 + n1 + n2).normalize();
 }
 
-Vector3 Heightmap::normalAt(unsigned int x, unsigned int y)
+Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
-	return surfaceNormal(x, y, x, y+1, x+1, y);
+	Vector3 a(0, 0, 0);
+
+	a += surfaceNormal(x, y, x, y-1, x-1, y);
+	a += surfaceNormal(x, y, x-1, y, x-1, y+1);
+	a += surfaceNormal(x, y, x-1, y+1, x, y+1);
+	a += surfaceNormal(x, y, x, y+1, x+1, y);
+	a += surfaceNormal(x, y, x+1, y, x+1, y-1);
+	a += surfaceNormal(x, y, x+1, y-1, x, y-1);
+
+	return a.normalize();
 }
 
 void Heightmap::draw()
@@ -66,6 +75,7 @@ void Heightmap::draw()
 		glEnd();
 	}
 
+	return;
 	// Debug normals
 	glDisable(GL_LIGHTING);
 	for(size_t y = 0; y < _height - 1; y++)
@@ -73,7 +83,7 @@ void Heightmap::draw()
 		for(size_t x = 0; x < _width - 1; x++)
 		{
 			Vector3 p1(positionAt(x, y));
-			Vector3 p2(p1 + normalAt(x, y));
+			Vector3 p2(p1 + vertexNormalAt(x, y));
 
 			glBegin(GL_LINES);
 			glColor3f(0.7, 1.0, 0.7);
