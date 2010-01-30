@@ -1,11 +1,13 @@
 #include "heightmap.hpp"
 #include "triangle.hpp"
 #include "opengl.hpp"
+#include "vertex.hpp"
 #include <iostream>
 
 Heightmap::Heightmap(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
 {
+
 	_heights.resize(_width * _height);
 	_colors.resize(_width * _height);
 	for(size_t y = 0; y < _height; y++)
@@ -19,6 +21,7 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 			);
 		}
 	}
+	_vertex_buffers_filled = false;
 }
 
 void Heightmap::drawVertex(unsigned int x, unsigned int y)
@@ -41,39 +44,79 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 	Vector3 v1 = positionAt(x1, y1);
 	Vector3 v2 = positionAt(x2, y2);
 
-	Vector3 n0 = Triangle(v0, v1, v2).getNormal();
+	Vector3 n0 = Triangle(v0, v2, v1).getNormal();
 	Vector3 n1 = Triangle(v2, v0, v1).getNormal();
-	Vector3 n2 = Triangle(v1, v2, v0).getNormal();
+	Vector3 n2 = Triangle(v1, v0, v2).getNormal();
 
 	return (n0 + n1 + n2).normalize();
 }
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
-	Vector3 a(0, 0, 0);
+	return (
+		surfaceNormal(x, y, x, y+1, x+1, y+1)
+	).normalize();
 
-	a += surfaceNormal(x, y, x, y-1, x-1, y);
+	Vector3 a(0, 0, 0);
 	a += surfaceNormal(x, y, x-1, y, x-1, y+1);
 	a += surfaceNormal(x, y, x-1, y+1, x, y+1);
 	a += surfaceNormal(x, y, x, y+1, x+1, y);
 	a += surfaceNormal(x, y, x+1, y, x+1, y-1);
 	a += surfaceNormal(x, y, x+1, y-1, x, y-1);
+	a += surfaceNormal(x, y, x, y-1, x-1, y);
 
 	return a.normalize();
 }
 
+void Heightmap::update()
+{
+	if(_vertex_buffers_filled)
+		return;
+	_vertex_buffers_filled = true;
+	_vbo.reset(new VertexBufferObject(VertexBufferObject::ArrayBuffer));
+	_ibo.reset(new VertexBufferObject(VertexBufferObject::ElementArrayBuffer));
+
+	std::vector<Vertex> vertex_data;
+	for(size_t x = 0; x < _width; x++)
+	{
+		for(size_t y = 0; y < _height; y++)
+		{
+			Vertex vertex;
+			vertex.position = positionAt(x, y);
+			vertex.normal   = vertexNormalAt(x, y);
+			vertex.color    = colorAt(x, y);
+			vertex_data.push_back(vertex);
+		}
+	}
+
+	_vbo->fill(vertex_data, VertexBufferObject::StaticDraw);
+
+	std::vector<unsigned short> indexes;
+	for(size_t x = 0; x < _width ; x++)
+	{
+		bool even = x % 2 == 0;
+		if(even)
+			for(size_t y = 0; y < _height ; y++)
+				addIndex(indexes, x, y);
+		else
+			for(size_t y = _height - 1; y; y--)
+				addIndex(indexes, x, y);
+	}
+
+	_ibo->fill(indexes, VertexBufferObject::StaticDraw);
+}
+
 void Heightmap::draw()
 {
-	for(size_t y = 0; y < _height - 1; y++)
-	{
-		glBegin(GL_TRIANGLE_STRIP);
-		for(size_t x = 0; x < _width - 1; x++)
-		{
-			drawVertex(x, y);
-			drawVertex(x, y+1);
-		}
-		glEnd();
-	}
+	_vbo->bind();
+	_ibo->bind();
+	glEnableClientState(GL_VERTEX_ARRAY);
+	unsigned int vertex_size = sizeof(Vertex);
+	glVertexPointer(3, GL_FLOAT, vertex_size, (void*)0);
+	glNormalPointer(GL_FLOAT, vertex_size, (void*)12);
+	glColorPointer(3, GL_FLOAT, vertex_size, (void*)24);
+	glDrawElements(GL_TRIANGLE_STRIP, (_width - 1) * (_height - 1) * 2, GL_UNSIGNED_SHORT, 0);
+	glDisableClientState(GL_VERTEX_ARRAY);
 
 	return;
 	// Debug normals

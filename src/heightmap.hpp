@@ -2,7 +2,9 @@
 #define HEIGHTMAP_HPP
 
 #include <vector>
+#include <boost/shared_ptr.hpp>
 #include "color.hpp"
+#include "vertex_buffer_object.hpp"
 #include "vector3.hpp"
 
 class Heightmap
@@ -30,6 +32,7 @@ class Heightmap
 			return _colors.at(posToIndex(x, y));
 		}
 
+		void update();
 		void draw();
 
 	protected:
@@ -46,10 +49,22 @@ class Heightmap
 			return y * _width + x;
 		}
 
+		void addIndex(std::vector<unsigned short>& indexes, unsigned int x, unsigned int y)
+		{
+			indexes.push_back(posToIndex(x, y));
+			indexes.push_back(posToIndex(x+1, y));
+		}
+
 		Vector3 surfaceNormal(
 			unsigned int x0, unsigned int y0,
 			unsigned int x1, unsigned int y1,
 			unsigned int x2, unsigned int y2);
+
+		std::vector<Vector3> _normals;
+
+		boost::shared_ptr<VertexBufferObject> _vbo;
+		boost::shared_ptr<VertexBufferObject> _ibo;
+		bool _vertex_buffers_filled; // temporary, should be removed when data can be updated after update()
 };
 
 #endif
