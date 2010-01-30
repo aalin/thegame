@@ -16,6 +16,7 @@ set(SHARED_SOURCES
 	cube_scene
 	shader_program
 	vector3
+	util
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

@@ -1,6 +1,7 @@
 #ifndef HEIGHTMAP_HPP
 #define HEIGHTMAP_HPP
 
+#include <string>
 #include <vector>
 #include <boost/shared_ptr.hpp>
 #include "color.hpp"
@@ -11,6 +12,8 @@ class Heightmap
 {
 	public:
 		Heightmap(unsigned int width, unsigned int height);
+
+		static Heightmap loadFromFile(std::string filename);
 
 		float heightAt(unsigned int x, unsigned int y) const
 		{
