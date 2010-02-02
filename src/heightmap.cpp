@@ -3,6 +3,7 @@
 #include "opengl.hpp"
 #include "vertex.hpp"
 #include "util.hpp"
+#include "image.hpp"
 #include <iostream>
 #include <cmath>
 
@@ -29,19 +30,15 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 Heightmap
 Heightmap::loadFromFile(std::string filename)
 {
-	std::vector<char> data(Util::loadFile(filename.c_str()));
+	Image image(filename);
 
-	unsigned int heightmap_size = std::sqrt(data.size() / 4);
+	Heightmap heightmap(image.getWidth(), image.getHeight());
 
-	Heightmap heightmap(heightmap_size, heightmap_size);
-
-	for(size_t y = 0; y < heightmap_size - 1; y++)
+	for(size_t y = 0; y < image.getHeight() - 1; y++)
 	{
-		for(size_t x = 0; x < heightmap_size - 1; x++)
+		for(size_t x = 0; x < image.getWidth() - 1; x++)
 		{
-			size_t index = y * heightmap_size * 4 + x * 4 + 4;
-			unsigned char value = data.at(index);
-			float height = value / 255.0 * 64.0;
+			float height = image.at(x, y).r * 40;
 			heightmap.setHeightAt(x, y, height);
 		}
 	}

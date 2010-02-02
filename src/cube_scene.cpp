@@ -7,7 +7,7 @@
 const float PI = 3.14159265358979;
 const int heightmap_size = 256;
 
-CubeScene::CubeScene() : _heightmap(Heightmap::loadFromFile("data/heightmap.rgba"))
+CubeScene::CubeScene() : _heightmap(Heightmap::loadFromFile("data/heightmap.png"))
 {
 }
 
