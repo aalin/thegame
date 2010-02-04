@@ -47,8 +47,12 @@ void lightHaxx(unsigned int light_number, float ticks, float z)
 	glLightfv(light_number, GL_POSITION,LightPosition);
 	glEnable(light_number);
 
-	glDisable(GL_FOG);
 	glDisable(GL_LIGHTING);
+	glBegin(GL_LINES);
+		glVertex3f(x, y, 0.0);
+		glVertex3f(x, y, 100.0);
+	glEnd();
+	glDisable(GL_FOG);
 	glPointSize(10.0);
 	glBegin(GL_POINTS);
 		glVertex3f(x, y, z);
