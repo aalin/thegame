@@ -19,14 +19,14 @@ void CubeScene::update()
 void drawCamera()
 {
 	float ticks = SDL_GetTicks() / 30.0;
-	float distance = heightmap_size / 2;
+	float distance = heightmap_size;
 	float x = std::cos(ticks / 180.0 * PI) * distance;
 	float y = std::sin(ticks / 180.0 * PI) * distance;
 	float z = 100; //distance/3*2 + std::sin(ticks / 320.0 * PI) * distance / 2;
 
 	gluLookAt(
 		x+heightmap_size/2, y+heightmap_size/2, z,
-		heightmap_size/2, heightmap_size/2, 50.0,
+		heightmap_size/2, heightmap_size/2, 20.0,
 		0.0, 0.0, 1.0
 	);
 }
@@ -37,11 +37,9 @@ void lightHaxx(unsigned int light_number, float ticks, float z)
 	float x = heightmap_size / 2 + std::cos(ticks / 360.0 * PI) * radius;
 	float y = heightmap_size / 2 + std::sin(ticks / 360.0 * PI) * radius;
 
-	float r = std::sin((ticks / 360.0) + 0.0 / 3.0 * PI);
-	float g = std::sin((ticks / 360.0) + 1.0 / 3.0 * PI);
-	float b = std::sin((ticks / 360.0) + 2.0 / 3.0 * PI);
+	float c = std::sin((ticks / 360.0) + 0.0 / 3.0 * PI);
 	GLfloat LightAmbient[]= { 0.0, 0.0, 0.0, 1.0f };
-	GLfloat LightDiffuse[]= { r, g, b, 1.0 };
+	GLfloat LightDiffuse[]= { 1.0, 1.0, 1.0, 0.5 };
 	GLfloat LightPosition[]= { x, y, z, 1.0f };
 
 	glLightfv(light_number, GL_AMBIENT, LightAmbient);
@@ -49,19 +47,49 @@ void lightHaxx(unsigned int light_number, float ticks, float z)
 	glLightfv(light_number, GL_POSITION,LightPosition);
 	glEnable(light_number);
 
+	glDisable(GL_FOG);
 	glDisable(GL_LIGHTING);
 	glPointSize(10.0);
 	glBegin(GL_POINTS);
 		glVertex3f(x, y, z);
 	glEnd();
 	glEnable(GL_LIGHTING);
+	glEnable(GL_FOG);
 }
 
 void CubeScene::drawLights()
 {
 	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 30.0, 32.0);
-	lightHaxx(GL_LIGHT2, SDL_GetTicks() / 20.0, 44.0);
-	lightHaxx(GL_LIGHT1, SDL_GetTicks() / 10.0, 32.0);
+	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 10.0, 32.0);
+}
+
+void CubeScene::drawFog()
+{
+    GLfloat fog_color[] = {0.0, 0.0, 0.0, 0.5};
+    glFogfv(GL_FOG_COLOR, fog_color);
+    glFogi(GL_FOG_MODE, GL_LINEAR);
+    glFogf(GL_FOG_DENSITY, 0.1);
+    glHint(GL_FOG_HINT, GL_NICEST);
+    glFogf(GL_FOG_START, 300.0);
+    glFogf(GL_FOG_END, 500.0);
+
+	glEnable(GL_FOG);
+}
+
+void CubeScene::drawMaterial()
+{
+    GLfloat material_ka[] = {1, 1, 1, 1.0};
+    GLfloat material_kd[] = {0.43, 0.47, 0.54, 1.0};
+    GLfloat material_ks[] = {0.33, 0.33, 0.53, 1.0};
+    GLfloat material_ke[] = {0.0, 0.0, 0.0, 0.0};
+    GLfloat material_se = 10;
+    
+    glMaterialfv(GL_FRONT, GL_AMBIENT, material_ka);
+    glMaterialfv(GL_FRONT, GL_DIFFUSE, material_kd);
+    glMaterialfv(GL_FRONT, GL_SPECULAR, material_ks);
+    glMaterialfv(GL_FRONT, GL_EMISSION, material_ke);
+    glMaterialfv(GL_FRONT, GL_SHININESS, &material_se);
+	glEnable(GL_COLOR_MATERIAL);
 }
 
 void CubeScene::draw()
@@ -76,5 +104,7 @@ void CubeScene::draw()
 	drawCamera();
 
 	drawLights();
+	drawFog();
+	drawMaterial();
 	_heightmap.draw();
 }

@@ -10,20 +10,8 @@
 Heightmap::Heightmap(unsigned int width, unsigned int height)
 	: _width(width), _height(height)
 {
-
 	_heights.resize(_width * _height);
 	_colors.resize(_width * _height);
-	for(size_t y = 0; y < _height; y++)
-	{
-		for(size_t x = 0; x < _width; x++)
-		{
-			colorAt(x, y) = Color(
-				x * 1.0 / _width,
-				y * 1.0 / _height,
-				(x + y) * 1.0 / (_width + _height)
-			);
-		}
-	}
 	_vertex_buffers_filled = false;
 }
 
@@ -40,6 +28,8 @@ Heightmap::loadFromFile(std::string filename)
 		{
 			float height = image.at(x, y).r * 40;
 			heightmap.setHeightAt(x, y, height);
+			//heightmap.colorAt(x, y) = ((x) % 2 == 0) ? Color(0.5, 0.0, 0.5) : Color(0.0, 1.0, 0.0);
+			heightmap.colorAt(x, y) = Color(0.0, 0.5, 0.0);
 		}
 	}
 	
@@ -75,19 +65,17 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
+	if(x % 2 == 0)
+		return surfaceNormal(x, y, x+1, y, x +1, y-1);
+
 	return (
-		surfaceNormal(x, y, x, y+1, x+1, y+1)
-	).normalize();
-
-	Vector3 a(0, 0, 0);
-	a += surfaceNormal(x, y, x-1, y, x-1, y+1);
-	a += surfaceNormal(x, y, x-1, y+1, x, y+1);
-	a += surfaceNormal(x, y, x, y+1, x+1, y);
-	a += surfaceNormal(x, y, x+1, y, x+1, y-1);
-	a += surfaceNormal(x, y, x+1, y-1, x, y-1);
-	a += surfaceNormal(x, y, x, y-1, x-1, y);
-
-	return a.normalize();
+			surfaceNormal(x, y, x-1, y, x-1, y+1) +
+			surfaceNormal(x, y, x-1, y+1, x, y+1) +
+			surfaceNormal(x, y, x, y+1, x+1, y) +
+			surfaceNormal(x, y, x+1, y, x+1, y-1) +
+			surfaceNormal(x, y, x+1, y-1, x, y-1) +
+			surfaceNormal(x, y, x, y-1, x-1, y)
+		   ).normalize();
 }
 
 void Heightmap::update()
@@ -133,31 +121,15 @@ void Heightmap::draw()
 	_vbo->bind();
 	_ibo->bind();
 	glEnableClientState(GL_VERTEX_ARRAY);
+	glEnableClientState(GL_NORMAL_ARRAY);
+	glEnableClientState(GL_COLOR_ARRAY);
 	unsigned int vertex_size = sizeof(Vertex);
 	glVertexPointer(3, GL_FLOAT, vertex_size, (void*)0);
 	glNormalPointer(GL_FLOAT, vertex_size, (void*)12);
 	glColorPointer(3, GL_FLOAT, vertex_size, (void*)24);
 	glDrawElements(GL_TRIANGLE_STRIP, (_width - 1) * (_height - 1) * 2, GL_UNSIGNED_SHORT, 0);
+	glDisableClientState(GL_COLOR_ARRAY);
+	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
-
-	return;
-	// Debug normals
-	glDisable(GL_LIGHTING);
-	for(size_t y = 0; y < _height - 1; y++)
-	{
-		for(size_t x = 0; x < _width - 1; x++)
-		{
-			Vector3 p1(positionAt(x, y));
-			Vector3 p2(p1 + vertexNormalAt(x, y));
-
-			glBegin(GL_LINES);
-			glColor3f(0.7, 1.0, 0.7);
-			glVertex3f(p1.x, p1.y, p1.z);
-			glColor3f(0.7, 0.7, 1.0);
-			glVertex3f(p2.x, p2.y, p2.z);
-			glEnd();
-		}
-	}
-	glEnable(GL_LIGHTING);
 }
 

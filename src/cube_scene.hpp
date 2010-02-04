@@ -14,6 +14,8 @@ class CubeScene
 	private:
 		Heightmap _heightmap;
 		void drawLights();
+		void drawFog();
+		void drawMaterial();
 };
 
 #endif
