@@ -28,21 +28,11 @@ Heightmap::loadFromFile(std::string filename)
 		{
 			float height = image.at(x, y).r * 40;
 			heightmap.setHeightAt(x, y, height);
-			//heightmap.colorAt(x, y) = ((x) % 2 == 0) ? Color(0.5, 0.0, 0.5) : Color(0.0, 1.0, 0.0);
-			heightmap.colorAt(x, y) = Color(0.0, 0.5, 0.0);
+			heightmap.colorAt(x, y) = Color(std::sin(height / 40.0), std::cos(height / 40.0), std::sin(height / 80.0));
 		}
 	}
 	
 	return heightmap;
-}
-
-void Heightmap::drawVertex(unsigned int x, unsigned int y)
-{
-	colorAt(x, y).draw();
-	Vector3 normal(vertexNormalAt(x, y));
-	glNormal3f(normal.x, normal.y, normal.z);
-	Vector3 pos(positionAt(x, y));
-	glVertex3f(pos.x, pos.y, pos.z);
 }
 
 Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
@@ -65,17 +55,7 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
-	if(x % 2 == 0)
-		return surfaceNormal(x, y, x+1, y, x +1, y-1);
-
-	return (
-			surfaceNormal(x, y, x-1, y, x-1, y+1) +
-			surfaceNormal(x, y, x-1, y+1, x, y+1) +
-			surfaceNormal(x, y, x, y+1, x+1, y) +
-			surfaceNormal(x, y, x+1, y, x+1, y-1) +
-			surfaceNormal(x, y, x+1, y-1, x, y-1) +
-			surfaceNormal(x, y, x, y-1, x-1, y)
-		   ).normalize();
+	return surfaceNormal(x, y, x+1, y, x +1, y-1);
 }
 
 void Heightmap::update()
@@ -104,13 +84,11 @@ void Heightmap::update()
 	std::vector<unsigned short> indexes;
 	for(size_t x = 0; x < _width ; x++)
 	{
-		bool even = x % 2 == 0;
-		if(even)
-			for(size_t y = 0; y < _height ; y++)
-				addIndex(indexes, x, y);
-		else
-			for(size_t y = _height - 1; y; y--)
-				addIndex(indexes, x, y);
+		for(size_t y = 0; y < _height ; y++)
+		{
+			indexes.push_back(posToIndex(x, y));
+			indexes.push_back(posToIndex(x+1, y));
+		}
 	}
 
 	_ibo->fill(indexes, VertexBufferObject::StaticDraw);
@@ -120,6 +98,7 @@ void Heightmap::draw()
 {
 	_vbo->bind();
 	_ibo->bind();
+
 	glEnableClientState(GL_VERTEX_ARRAY);
 	glEnableClientState(GL_NORMAL_ARRAY);
 	glEnableClientState(GL_COLOR_ARRAY);
@@ -127,7 +106,10 @@ void Heightmap::draw()
 	glVertexPointer(3, GL_FLOAT, vertex_size, (void*)0);
 	glNormalPointer(GL_FLOAT, vertex_size, (void*)12);
 	glColorPointer(3, GL_FLOAT, vertex_size, (void*)24);
-	glDrawElements(GL_TRIANGLE_STRIP, (_width - 1) * (_height - 1) * 2, GL_UNSIGNED_SHORT, 0);
+
+	for(unsigned int x = 0; x < _width - 2; x++)
+		glDrawElements(GL_TRIANGLE_STRIP, _height * 2, GL_UNSIGNED_SHORT, (void*)(x * 2 * _height * 2));
+
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);

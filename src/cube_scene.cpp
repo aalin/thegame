@@ -19,7 +19,7 @@ void CubeScene::update()
 void drawCamera()
 {
 	float ticks = SDL_GetTicks() / 30.0;
-	float distance = heightmap_size;
+	float distance = heightmap_size + 50;
 	float x = std::cos(ticks / 180.0 * PI) * distance;
 	float y = std::sin(ticks / 180.0 * PI) * distance;
 	float z = 100; //distance/3*2 + std::sin(ticks / 320.0 * PI) * distance / 2;

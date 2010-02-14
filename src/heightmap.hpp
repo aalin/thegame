@@ -44,18 +44,11 @@ class Heightmap
 		std::vector<float> _heights;
 		std::vector<Color> _colors;
 
-		void drawVertex(unsigned int x, unsigned int y);
 		Vector3 vertexNormalAt(unsigned int x, unsigned int y);
 
 		unsigned int posToIndex(unsigned int x, unsigned int y) const
 		{
 			return y * _width + x;
-		}
-
-		void addIndex(std::vector<unsigned short>& indexes, unsigned int x, unsigned int y)
-		{
-			indexes.push_back(posToIndex(x, y));
-			indexes.push_back(posToIndex(x+1, y));
 		}
 
 		Vector3 surfaceNormal(
