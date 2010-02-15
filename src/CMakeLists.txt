@@ -19,6 +19,7 @@ set(SHARED_SOURCES
 	vector3
 	util
 	image
+	sky
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

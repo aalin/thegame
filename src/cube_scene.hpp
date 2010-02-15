@@ -3,6 +3,7 @@
 
 #include "opengl.hpp"
 #include "heightmap.hpp"
+#include "sky.hpp"
 
 class CubeScene
 {
@@ -12,6 +13,7 @@ class CubeScene
 		void draw();
 
 	private:
+		Sky _sky;
 		Heightmap _heightmap;
 		void drawLights();
 		void drawFog();

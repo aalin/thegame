@@ -7,7 +7,9 @@
 const float PI = 3.14159265358979;
 const int heightmap_size = 256;
 
-CubeScene::CubeScene() : _heightmap(Heightmap::loadFromFile("data/heightmap.png"))
+CubeScene::CubeScene()
+	: _sky(heightmap_size + 20),
+	  _heightmap(Heightmap::loadFromFile("data/heightmap.png"))
 {
 }
 
@@ -121,4 +123,9 @@ void CubeScene::draw()
 	drawFog();
 	drawMaterial();
 	_heightmap.draw();
+
+	glPushMatrix();
+		glTranslatef(heightmap_size / 2, heightmap_size / 2, 30.0);
+		_sky.draw();
+	glPopMatrix();
 }

@@ -30,8 +30,17 @@ struct Vector3
 		return *this;
 	}
 
+	Vector3& operator*=(float f)
+	{
+		x *= f;
+		y *= f;
+		z *= f;
+		return *this;
+	}
+
 	Vector3 operator-(const Vector3& v) const { return Vector3(*this) -= v; }
 	Vector3 operator+(const Vector3& v) const { return Vector3(*this) += v; }
+	Vector3 operator*(float f) const { return Vector3(*this) *= f; }
 		
 	bool operator==(const Vector3& v) const;
 
