@@ -2,7 +2,7 @@
 
 Trying to make a game for an idea I have.
 
-[!screenshot](http://i.imgur.com/zyNDA.png)
+![Screenshot](http://i.imgur.com/zyNDA.png)
 
 # Todo
 
