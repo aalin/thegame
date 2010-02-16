@@ -34,7 +34,7 @@ void Sky::buildVBO()
 		for(unsigned int i = 0; i <= 360; i += 1)
 		{
 			Vertex vertex;
-			vertex.position = sphereVector3(i, j) * 100;
+			vertex.position = sphereVector3(i, j) * _radius;
 			vertex.color = Color(std::sin(j / 180.0 * PI), 0.0, std::sin(i / 180.0 * PI));
 			vertex.color = Color(1.0, 1.0, 1.0);
 			vertex_data.push_back(vertex);
@@ -53,23 +53,6 @@ void Sky::draw()
 		buildVBO();
 
 	glDisable(GL_FOG);
-	glDisable(GL_LIGHTING);
-	glDisable(GL_POINT_SMOOTH);
-
-	glColor3f(0.5, 0.5, 0.0);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
-	glBegin(GL_TRIANGLE_STRIP);
-	for(unsigned int j = 0; j <= 360; j += 15)
-	{
-		for(unsigned int i = 0; i <= 360; i += 15)
-		{
-			Vector3 v1 = sphereVector3(i, j) * 30;
-			Vector3 v2 = sphereVector3(i, j + 15) * 30;
-			glVertex3f(v1.x, v1.y, v1.z);
-			glVertex3f(v2.x, v2.y, v2.z);
-		}
-	}
-	glEnd();
 
 	_vbo->bind();
 	_ibo->bind();
@@ -90,6 +73,5 @@ void Sky::draw()
 	glDisableClientState(GL_VERTEX_ARRAY);
 
 	glEnable(GL_FOG);
-	glPolygonMode(GL_FRONT_AND_BACK, GL_FILL); // Wireframe
 }
 
