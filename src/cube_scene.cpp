@@ -33,7 +33,7 @@ void drawCamera()
 	Vector3 look_at = Vector3(
 		std::cos(ticks / 180.0 * PI) * heightmap_size / 8 + std::sin(ticks * 5.0 / 180.0 * PI) * heightmap_size / 16,
 		std::sin(ticks / 180.0 * PI) * heightmap_size / 8 + std::cos(ticks * 5.0 / 180.0 * PI) * heightmap_size / 16,
-		30.0
+		std::sin(ticks / 180 * PI) * 30.0 + 60
 	) + origin;
 
 	gluLookAt(

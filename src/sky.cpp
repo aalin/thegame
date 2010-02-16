@@ -36,7 +36,6 @@ void Sky::buildVBO()
 			Vertex vertex;
 			vertex.position = sphereVector3(i, j) * _radius;
 			vertex.color = Color(std::sin(j / 180.0 * PI), 0.0, std::sin(i / 180.0 * PI));
-			vertex.color = Color(1.0, 1.0, 1.0);
 			vertex_data.push_back(vertex);
 			indexes.push_back(j * 360 + i);
 			indexes.push_back((j + 1) * 360 + i);
