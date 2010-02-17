@@ -6,6 +6,7 @@
 #include <iostream>
 
 const float PI = 3.14159265358979;
+const unsigned int num_edges = 20;
 
 Sky::Sky(float radius)
 {
@@ -29,16 +30,21 @@ void Sky::buildVBO()
 	std::vector<Vertex> vertex_data;
 	std::vector<unsigned short> indexes;
 
-	for(unsigned int j = 0; j <= 360; j += 1)
+	for(unsigned int j = 0; j <= num_edges; j += 1)
 	{
-		for(unsigned int i = 0; i <= 360; i += 1)
+		for(unsigned int i = 0; i <= num_edges; i += 1)
 		{
+			float real_j = j / static_cast<float>(num_edges) * 360.0;
+			float real_i = i / static_cast<float>(num_edges) * 360.0;
+
+			std::cout << "radius: " << _radius << std::endl;
+
 			Vertex vertex;
-			vertex.position = sphereVector3(i, j) * _radius;
-			vertex.color = Color(std::sin(j / 180.0 * PI) / 2.0, std::sin(j / 180.0 * PI) / 2.0, 1.0);
+			vertex.position = sphereVector3(real_i, real_j) * _radius;
+			vertex.color = Color(std::sin(real_j / 180.0 * PI) / 2.0, std::sin(real_j / 180.0 * PI) / 2.0, 1.0);
 			vertex_data.push_back(vertex);
-			indexes.push_back(j * 360 + i);
-			indexes.push_back((j + 1) * 360 + i);
+			indexes.push_back(j * (num_edges + 1) + i);
+			indexes.push_back((j + 1) * (num_edges + 1) + i);
 		}
 	}
 
@@ -65,7 +71,7 @@ void Sky::draw()
 	glColorPointer(3, GL_FLOAT, vertex_size, (void*)24);
 
 	glPointSize(1.0);
-	glDrawElements(GL_TRIANGLE_STRIP, 360 * 360, GL_UNSIGNED_SHORT, 0);
+	glDrawElements(GL_TRIANGLE_STRIP, (num_edges + 1) * (num_edges + 1), GL_UNSIGNED_SHORT, 0);
 
 	glDisableClientState(GL_COLOR_ARRAY);
 	//glDisableClientState(GL_NORMAL_ARRAY);
