@@ -14,4 +14,5 @@ Trying to make a game for an idea I have.
 ## Sky
 
 * Add normals.
+* Make it more like a dome. We dont need the sky underground.
 
