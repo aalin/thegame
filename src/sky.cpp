@@ -68,7 +68,7 @@ void Sky::buildVBO()
 
 	VertexIndexMap vertex_indexes;
 
-	for(unsigned int j = 0; j < num_edges / 2; j += 1)
+	for(unsigned int j = 0; j < num_edges; j += 1)
 	{
 		bool first_j = (j == 0);
 		bool last_j = (j + 1 == num_edges);
