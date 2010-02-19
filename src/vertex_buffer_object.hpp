@@ -30,6 +30,7 @@ class VertexBufferObject
 
 		VertexBufferObject(Target target)
 		{
+			_size = 0;
 			_target = target;
 			glGenBuffers(1, &_buffer_id);
 		}
@@ -47,8 +48,11 @@ class VertexBufferObject
 			glBindBuffer(_target, _buffer_id);
 		}
 
+		unsigned int size() const { return _size; }
+
 	protected:
 		unsigned int _buffer_id;
+		unsigned int _size;
 		Target _target;
 };
 
@@ -57,6 +61,7 @@ void VertexBufferObject::fill(const std::vector<T>& data, Usage usage)
 {
 	bind();
 	const GLsizeiptr byte_size = sizeof(T) * data.size();
+	_size = data.size();
 	glBufferData(_target, byte_size, &data[0], usage);
 }
 
