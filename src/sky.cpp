@@ -68,14 +68,17 @@ void Sky::buildVBO()
 
 	VertexIndexMap vertex_indexes;
 
-	for(unsigned int j = 0; j < num_edges; j++)
+	// Dividing j by two to make it a dome. Without that, it would be a sphere.
+	for(unsigned int j = 0; j < num_edges / 2; j++)
 	{
 		bool first_j = (j == 0);
 		bool last_j  = (j + 1 == num_edges);
 
 		for(unsigned int i = 0; i <= num_edges; i++)
 		{
+			// The first "row" has only a height (z) no width (x, y), so just do 0 there.
 			indexes.push_back(getVertexIndex(vertex_indexes, vertexes, first_j ? 0 : i, j, _radius));
+			// The last "row" also has only a height, so we do i = 0 here as well.
 			indexes.push_back(getVertexIndex(vertex_indexes, vertexes, last_j  ? 0 : i, j + 1, _radius));
 		}
 	}
