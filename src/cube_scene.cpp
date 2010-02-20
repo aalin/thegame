@@ -18,23 +18,27 @@ void CubeScene::update()
 	_heightmap.update();
 }
 
+Vector3 cameraPosAt(float ticks)
+{
+	Vector3 pos(
+		std::cos(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5,
+		std::sin(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5,
+		0.0
+	);
+	return pos;
+}
+
 void drawCamera()
 {
 	float ticks = SDL_GetTicks() / 100.0;
 
-	Vector3 origin(heightmap_size / 2, heightmap_size / 2, 0.0);
-
-	Vector3 eye_pos = Vector3(
-		std::cos(ticks * 2.0 / 180.0 * PI) * heightmap_size  + std::sin(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
-		std::sin(ticks * 2.0 / 180.0 * PI) * heightmap_size  + std::cos(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
-		80.0
-	) + origin;
-
-	Vector3 look_at = Vector3(
-		std::cos(ticks / 180.0 * PI) * heightmap_size / 8 + std::sin(ticks * 5.0 / 180.0 * PI) * heightmap_size / 16,
-		std::sin(ticks / 180.0 * PI) * heightmap_size / 8 + std::cos(ticks * 5.0 / 180.0 * PI) * heightmap_size / 16,
-		std::sin(ticks / 180 * PI) * 30.0 + 60
-	) + origin;
+	Vector3 origin = Vector3(heightmap_size / 2.0, heightmap_size / 2.0, 0.0);
+	Vector3 eye_pos = cameraPosAt(ticks) + origin;
+	Vector3 look_at = cameraPosAt(ticks + 30.0);
+	eye_pos.z = 40;
+	look_at *= 0.5;
+	look_at += origin;
+	look_at.z = 30;
 
 	gluLookAt(
 		eye_pos.x, eye_pos.y, eye_pos.z,
