@@ -55,7 +55,14 @@ Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int 
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
-	return surfaceNormal(x, y, x+1, y, x +1, y-1);
+	return (
+		surfaceNormal(x, y, x + 0, y - 1, x - 1, y + 0) +
+		surfaceNormal(x, y, x - 1, y + 0, x - 1, y + 1) +
+		surfaceNormal(x, y, x - 1, y + 1, x + 0, y + 1) +
+		surfaceNormal(x, y, x + 0, y + 1, x + 1, y + 0) +
+		surfaceNormal(x, y, x + 1, y + 0, x + 1, y - 1) +
+		surfaceNormal(x, y, x + 1, y - 1, x + 0, y - 1)
+	).normalize();
 }
 
 void Heightmap::setupVBO()
@@ -121,7 +128,7 @@ void Heightmap::drawNormals()
 		setupNormalsVBO();
 
 	glDisable(GL_LIGHTING);
-	glColor3f(1.0, 1.0, 1.0);
+	glColor4f(1.0, 1.0, 1.0, 0.5);
 
 	_normals_vbo->bind();
 
