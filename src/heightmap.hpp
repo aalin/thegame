@@ -44,6 +44,10 @@ class Heightmap
 		std::vector<float> _heights;
 		std::vector<Color> _colors;
 
+		void setupVBO();
+		void setupNormalsVBO();
+		void drawNormals();
+
 		Vector3 vertexNormalAt(unsigned int x, unsigned int y);
 
 		unsigned int posToIndex(unsigned int x, unsigned int y) const
@@ -60,6 +64,7 @@ class Heightmap
 
 		boost::shared_ptr<VertexBufferObject> _vbo;
 		boost::shared_ptr<VertexBufferObject> _ibo;
+		boost::shared_ptr<VertexBufferObject> _normals_vbo;
 		bool _vertex_buffers_filled; // temporary, should be removed when data can be updated after update()
 };
 

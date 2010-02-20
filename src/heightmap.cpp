@@ -58,11 +58,8 @@ Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 	return surfaceNormal(x, y, x+1, y, x +1, y-1);
 }
 
-void Heightmap::update()
+void Heightmap::setupVBO()
 {
-	if(_vertex_buffers_filled)
-		return;
-	_vertex_buffers_filled = true;
 	_vbo.reset(new VertexBufferObject(VertexBufferObject::ArrayBuffer));
 	_ibo.reset(new VertexBufferObject(VertexBufferObject::ElementArrayBuffer));
 
@@ -94,6 +91,48 @@ void Heightmap::update()
 	_ibo->fill(indexes, VertexBufferObject::StaticDraw);
 }
 
+void Heightmap::update()
+{
+	if(_vbo.get() == 0)
+		setupVBO();
+}
+
+void Heightmap::setupNormalsVBO()
+{
+	_normals_vbo.reset(new VertexBufferObject(VertexBufferObject::ArrayBuffer));
+	std::vector<Vector3> vectors;
+
+	for(unsigned int x = 0; x < _width; x++)
+	{
+		for(unsigned int y = 0; y < _height; y++)
+		{
+			Vector3 pos(positionAt(x, y));
+			vectors.push_back(pos);
+			vectors.push_back(pos + vertexNormalAt(x, y));
+		}
+	}
+
+	_normals_vbo->fill(vectors, VertexBufferObject::StaticDraw);
+}
+
+void Heightmap::drawNormals()
+{
+	if(_normals_vbo.get() == 0)
+		setupNormalsVBO();
+
+	glDisable(GL_LIGHTING);
+	glColor3f(1.0, 1.0, 1.0);
+
+	_normals_vbo->bind();
+
+	glEnableClientState(GL_VERTEX_ARRAY);
+	glVertexPointer(3, GL_FLOAT, sizeof(Vector3), (void*)0);
+	glDrawArrays(GL_LINES, 0, _normals_vbo->size());
+	glDisableClientState(GL_VERTEX_ARRAY);
+
+	glEnable(GL_LIGHTING);
+}
+
 void Heightmap::draw()
 {
 	_vbo->bind();
@@ -113,5 +152,7 @@ void Heightmap::draw()
 	glDisableClientState(GL_COLOR_ARRAY);
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
+
+	drawNormals();
 }
 
