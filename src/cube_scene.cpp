@@ -21,8 +21,8 @@ void CubeScene::update()
 Vector3 cameraPosAt(float ticks)
 {
 	Vector3 pos(
-		std::cos(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5,
-		std::sin(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5,
+		std::cos(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5 + std::sin(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
+		std::sin(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5 + std::cos(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
 		0.0
 	);
 	return pos;
