@@ -60,6 +60,7 @@ void Engine::draw()
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_POINT_SMOOTH);
+	glEnable(GL_LINE_SMOOTH);
 
 	// glPolygonMode(GL_FRONT_AND_BACK, GL_LINE); // Wireframe
 

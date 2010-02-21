@@ -79,8 +79,8 @@ void lightHaxx(unsigned int light_number, float ticks, float z)
 
 void CubeScene::drawLights()
 {
-	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 30.0, 32.0);
-	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 10.0, 32.0);
+	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 30.0, 50.0);
+	lightHaxx(GL_LIGHT0, SDL_GetTicks() / 10.0, 50.0);
 }
 
 void CubeScene::drawFog()

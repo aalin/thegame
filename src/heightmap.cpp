@@ -35,33 +35,28 @@ Heightmap::loadFromFile(std::string filename)
 	return heightmap;
 }
 
-Vector3 Heightmap::surfaceNormal(unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1, unsigned int x2, unsigned int y2)
+Vector3 Heightmap::surfaceNormal(unsigned int x, unsigned int y)
 {
-	if(x0 >= _width || x1 >= _width || x2 >= _width)
-		return Vector3(0.0, 0.0, 0.0);
-	if(y0 >= _height || y1 >= _height || y2 >= _height)
-		return Vector3(0.0, 0.0, 0.0);
+	if(x < 1 || x >= _width - 1 || y < 1 || y >= _height - 1)
+		return Vector3(0, 0, 0);
 
-	Vector3 v0 = positionAt(x0, y0);
-	Vector3 v1 = positionAt(x1, y1);
-	Vector3 v2 = positionAt(x2, y2);
-
-	Vector3 n0 = Triangle(v0, v2, v1).getNormal();
-	Vector3 n1 = Triangle(v2, v0, v1).getNormal();
-	Vector3 n2 = Triangle(v1, v0, v2).getNormal();
-
-	return (n0 + n1 + n2).normalize();
+	float dx = heightAt(x + 1, y) - heightAt(x - 1, y);
+	float dy = heightAt(x, y + 1) - heightAt(x, y - 1);
+	return Vector3(-dx, -dy, 1.0).normalize();
 }
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
 	return (
-		surfaceNormal(x, y, x + 0, y - 1, x - 1, y + 0) +
-		surfaceNormal(x, y, x - 1, y + 0, x - 1, y + 1) +
-		surfaceNormal(x, y, x - 1, y + 1, x + 0, y + 1) +
-		surfaceNormal(x, y, x + 0, y + 1, x + 1, y + 0) +
-		surfaceNormal(x, y, x + 1, y + 0, x + 1, y - 1) +
-		surfaceNormal(x, y, x + 1, y - 1, x + 0, y - 1)
+		surfaceNormal(x, y) +
+		surfaceNormal(x - 1, y) * 0.5 +
+		surfaceNormal(x + 1, y) * 0.5 +
+		surfaceNormal(x, y - 1) * 0.5 +
+		surfaceNormal(x, y + 1) * 0.5 +
+		surfaceNormal(x - 1, y - 1) * 0.25 +
+		surfaceNormal(x + 1, y - 1) * 0.25 +
+		surfaceNormal(x + 1, y + 1) * 0.25 +
+		surfaceNormal(x - 1, y + 1) * 0.25
 	).normalize();
 }
 
@@ -128,7 +123,7 @@ void Heightmap::drawNormals()
 		setupNormalsVBO();
 
 	glDisable(GL_LIGHTING);
-	glColor4f(1.0, 1.0, 1.0, 0.5);
+	glColor4f(1.0, 1.0, 1.0, 0.3);
 
 	_normals_vbo->bind();
 
