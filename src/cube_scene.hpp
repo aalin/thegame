@@ -4,6 +4,7 @@
 #include "opengl.hpp"
 #include "heightmap.hpp"
 #include "sky.hpp"
+#include "path.hpp"
 
 class CubeScene
 {
@@ -15,9 +16,12 @@ class CubeScene
 	private:
 		Sky _sky;
 		Heightmap _heightmap;
+		Path _path;
 		void drawLights();
 		void drawFog();
 		void drawMaterial();
+
+		float _player_path_pos;
 };
 
 #endif

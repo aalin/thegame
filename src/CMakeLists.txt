@@ -20,6 +20,7 @@ set(SHARED_SOURCES
 	util
 	image
 	sky
+	path
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

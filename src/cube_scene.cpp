@@ -11,6 +11,16 @@ CubeScene::CubeScene()
 	: _sky(heightmap_size + 30),
 	  _heightmap(Heightmap::loadFromFile("data/heightmap.png"))
 {
+	_player_path_pos = 0;
+
+	unsigned int num_points = 40;
+	for(unsigned int i = 0; i < num_points; i++)
+	{
+		float x = std::cos(i * 360.0 / num_points / 180.0 * PI) * heightmap_size / 4.0 + heightmap_size / 2;
+		float y = std::sin(i * 360.0 / num_points / 180.0 * PI) * heightmap_size / 4.0 + heightmap_size / 2;
+		float z = _heightmap.heightAt(x, y) + 4.0;
+		_path.addPoint(x, y, z);
+	}
 }
 
 void CubeScene::update()
@@ -132,4 +142,14 @@ void CubeScene::draw()
 	drawFog();
 	drawMaterial();
 	_heightmap.draw();
+
+	_path.draw();
+
+	glDisable(GL_LIGHTING);
+	glPointSize(50.0);
+	glBegin(GL_POINTS);
+		Vector3 pos(_path.positionAt(_player_path_pos));
+		glVertex3f(pos.x, pos.y, pos.z);
+	glEnd();
+	glEnable(GL_LIGHTING);
 }
