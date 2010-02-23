@@ -123,13 +123,13 @@ void CubeScene::draw()
 
 	drawCamera();
 
+	glPushMatrix();
+		glTranslatef(heightmap_size / 2, heightmap_size / 2, -20.0);
+		_sky.draw();
+	glPopMatrix();
+
 	drawLights();
 	drawFog();
 	drawMaterial();
 	_heightmap.draw();
-
-	glPushMatrix();
-		glTranslatef(heightmap_size / 2, heightmap_size / 2, 0.0);
-		_sky.draw();
-	glPopMatrix();
 }

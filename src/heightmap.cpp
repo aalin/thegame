@@ -47,17 +47,17 @@ Vector3 Heightmap::surfaceNormal(unsigned int x, unsigned int y)
 
 Vector3 Heightmap::vertexNormalAt(unsigned int x, unsigned int y)
 {
-	return (
-		surfaceNormal(x, y) +
-		surfaceNormal(x - 1, y) * 0.5 +
-		surfaceNormal(x + 1, y) * 0.5 +
-		surfaceNormal(x, y - 1) * 0.5 +
-		surfaceNormal(x, y + 1) * 0.5 +
-		surfaceNormal(x - 1, y - 1) * 0.25 +
-		surfaceNormal(x + 1, y - 1) * 0.25 +
-		surfaceNormal(x + 1, y + 1) * 0.25 +
-		surfaceNormal(x - 1, y + 1) * 0.25
-	).normalize();
+	// Pretty smooth normals. slow though.
+	const float PI = 3.14159265358979;
+	const int smooth_radius = 3;
+
+	Vector3 n;
+
+	for(int i = -smooth_radius; i < smooth_radius; i++)
+		for(int j = -smooth_radius; j < smooth_radius; j++)
+			n += surfaceNormal(x + i, y + j) * std::sin(std::abs(i + j) / 2.0 / smooth_radius / 2.0 * PI);
+
+	   return n.normalize();
 }
 
 void Heightmap::setupVBO()
@@ -155,6 +155,6 @@ void Heightmap::draw()
 	glDisableClientState(GL_NORMAL_ARRAY);
 	glDisableClientState(GL_VERTEX_ARRAY);
 
-	drawNormals();
+	// drawNormals();
 }
 
