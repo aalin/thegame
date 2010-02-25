@@ -64,7 +64,6 @@ void lightHaxx(unsigned int light_number, float ticks, float z)
 	float x = heightmap_size / 2 + std::cos(ticks / 360.0 * PI) * radius;
 	float y = heightmap_size / 2 + std::sin(ticks / 360.0 * PI) * radius;
 
-	float c = std::sin((ticks / 360.0) + 0.0 / 3.0 * PI);
 	GLfloat LightAmbient[]= { 0.0, 0.0, 0.0, 1.0f };
 	GLfloat LightDiffuse[]= { 1.0, 1.0, 1.0, 0.5 };
 	GLfloat LightPosition[]= { x, y, z, 1.0f };

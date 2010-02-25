@@ -2,18 +2,18 @@
 #include "opengl.hpp"
 #include <cmath>
 
-void Path::draw()
+void Path::draw() const
 {
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINE_STRIP);
 
-	BOOST_FOREACH(const Vector3& v, _points)
-		glVertex3f(v.x, v.y, v.z);
+	for(std::vector<Vector3>::const_iterator it = _points.begin(); it != _points.end(); it++)
+		glVertex3f(it->x, it->y, it->z);
 
 	glEnd();
 }
 
-float Path::length()
+float Path::length() const
 {
 	float len = 0.0;
 
@@ -28,7 +28,7 @@ float Path::length()
 	return len;
 }
 
-Vector3 Path::positionAt(float length)
+Vector3 Path::positionAt(float length) const
 {
 	// Make the length fit.
 	float total_length = this->length();

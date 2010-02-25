@@ -12,9 +12,9 @@ class Path
 			_points.push_back(Vector3(x, y, z));
 		}
 
-		void draw();
-		float length();
-		Vector3 positionAt(float length);
+		void draw() const;
+		float length() const;
+		Vector3 positionAt(float length) const;
 
 	private:
 		std::vector<Vector3> _points;
