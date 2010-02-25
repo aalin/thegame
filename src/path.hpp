@@ -1,7 +1,7 @@
 #ifndef PATH_HPP
 #define PATH_HPP
 
-#include <list>
+#include <vector>
 #include "vector3.hpp"
 
 class Path
@@ -17,7 +17,7 @@ class Path
 		Vector3 positionAt(float length);
 
 	private:
-		std::list<Vector3> _points;
+		std::vector<Vector3> _points;
 };
 
 #endif

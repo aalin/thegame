@@ -19,6 +19,17 @@ void testVector3()
 	BOOST_ASSERT( Vector3(1/4.0, -1/2.0, 1.0).crossProduct(Vector3(1/3.0, 1.0, -2/3.0)) == Vector3(-2/3.0, 1/2.0, 5/12.0) );
 }
 
+void testTheThing()
+{
+	Vector3 a(2, 1, 0);
+	Vector3 b(5, 3, 0);
+	Vector3 c = b - a;
+
+	float distance = c.getMagnitude();
+
+	BOOST_ASSERT(a + c.normalize() * distance == b);
+}
+
 void testTriangle()
 {
 	BOOST_ASSERT(
@@ -43,6 +54,7 @@ void testNormals()
 
 int main()
 {
+	testTheThing();
 	testVector3();
 	testTriangle();
 	testNormals();

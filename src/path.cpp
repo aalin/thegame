@@ -32,6 +32,31 @@ float Path::length()
 // TODO: Figure out the current position at the given length, counting from the beginning, and return it.
 Vector3 Path::positionAt(float length)
 {
+	// Make the length fit.
+	float total_length = this->length();
+	while(length > total_length)
+		length -= total_length;
+
+	float length_so_far = 0.0;
+
+	for(unsigned int i = 0; i < _points.size() - 1; i++)
+	{
+		const Vector3& current = _points[i];
+		const Vector3& next    = _points[i+1];
+
+		Vector3 delta(next - current);
+
+		float line_length = std::fabs(delta.getMagnitude());
+
+		// The given length is between current and next
+		if(length >= length_so_far && length < length_so_far + line_length)
+		{
+			float length_into_current = length - length_so_far;
+			return current + delta.normalize() * length_into_current;
+		}
+
+		length_so_far += line_length;
+	}
 	return _points.front();
 }
 

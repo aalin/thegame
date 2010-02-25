@@ -26,6 +26,7 @@ CubeScene::CubeScene()
 void CubeScene::update()
 {
 	_heightmap.update();
+	_player_path_pos += 0.05;
 }
 
 Vector3 cameraPosAt(float ticks)
@@ -131,7 +132,14 @@ void CubeScene::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	drawCamera();
+	Vector3 player_position(_path.positionAt(_player_path_pos));
+
+	// drawCamera();
+	gluLookAt(
+		heightmap_size / 2, heightmap_size / 2, 40,
+		player_position.x, player_position.y, player_position.z,
+		0.0, 0.0, 1.0
+	);
 
 	glPushMatrix();
 		glTranslatef(heightmap_size / 2, heightmap_size / 2, -20.0);
@@ -148,8 +156,7 @@ void CubeScene::draw()
 	glDisable(GL_LIGHTING);
 	glPointSize(50.0);
 	glBegin(GL_POINTS);
-		Vector3 pos(_path.positionAt(_player_path_pos));
-		glVertex3f(pos.x, pos.y, pos.z);
+		glVertex3f(player_position.x, player_position.y, player_position.z);
 	glEnd();
 	glEnable(GL_LIGHTING);
 }

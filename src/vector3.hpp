@@ -30,6 +30,22 @@ struct Vector3
 		return *this;
 	}
 
+	Vector3& operator*=(const Vector3& v)
+	{
+		x *= v.x;
+		y *= v.y;
+		z *= v.z;
+		return *this;
+	}
+
+	Vector3& operator/=(const Vector3& v)
+	{
+		x /= v.x;
+		y /= v.y;
+		z /= v.z;
+		return *this;
+	}
+
 	Vector3& operator*=(float f)
 	{
 		x *= f;
@@ -40,6 +56,8 @@ struct Vector3
 
 	Vector3 operator-(const Vector3& v) const { return Vector3(*this) -= v; }
 	Vector3 operator+(const Vector3& v) const { return Vector3(*this) += v; }
+	Vector3 operator*(const Vector3& v) const { return Vector3(*this) *= v; }
+	Vector3 operator/(const Vector3& v) const { return Vector3(*this) /= v; }
 	Vector3 operator*(float f) const { return Vector3(*this) *= f; }
 		
 	bool operator==(const Vector3& v) const;
