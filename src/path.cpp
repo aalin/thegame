@@ -47,7 +47,6 @@ Vector3 Path::positionAt(float length)
 
 		float line_length = std::fabs(delta.getMagnitude());
 
-		// The given length is between current and next
 		if(length >= length_so_far && length < length_so_far + line_length)
 		{
 			float length_into_current = length - length_so_far;
