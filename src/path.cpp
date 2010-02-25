@@ -29,7 +29,6 @@ float Path::length()
 	return len;
 }
 
-// TODO: Figure out the current position at the given length, counting from the beginning, and return it.
 Vector3 Path::positionAt(float length)
 {
 	// Make the length fit.
