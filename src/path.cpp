@@ -1,6 +1,5 @@
 #include "path.hpp"
 #include "opengl.hpp"
-#include <boost/foreach.hpp>
 #include <cmath>
 
 void Path::draw()
@@ -17,13 +16,13 @@ void Path::draw()
 float Path::length()
 {
 	float len = 0.0;
-	const Vector3* previous = 0;
 
-	BOOST_FOREACH(const Vector3& v, _points)
+	for(unsigned int i = 0; i < _points.size() - 1; i++)
 	{
-		if(previous)
-			len += std::fabs((v - *previous).getMagnitude());
-		previous = &v;
+		const Vector3& current = _points[i];
+		const Vector3& next    = _points[i+1];
+
+		len += std::fabs((next - current).getMagnitude());
 	}
 
 	return len;
@@ -55,6 +54,7 @@ Vector3 Path::positionAt(float length)
 
 		length_so_far += line_length;
 	}
+
 	return _points.front();
 }
 
