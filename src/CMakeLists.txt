@@ -21,6 +21,7 @@ set(SHARED_SOURCES
 	image
 	sky
 	path
+	player
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

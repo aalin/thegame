@@ -4,36 +4,36 @@
 #include <limits>
 #include <iostream>
 
-const float PI = 3.14159265358979;
 const int heightmap_size = 256;
 
 CubeScene::CubeScene()
 	: _sky(heightmap_size + 30),
 	  _heightmap(Heightmap::loadFromFile("data/heightmap.png"))
 {
-	_player_path_pos = 0;
-
+	Path path;
 	unsigned int num_points = 40;
 	for(unsigned int i = 0; i < num_points; i++)
 	{
-		float x = std::cos(i * 360.0 / num_points / 180.0 * PI) * heightmap_size / 4.0 + heightmap_size / 2;
-		float y = std::sin(i * 360.0 / num_points / 180.0 * PI) * heightmap_size / 4.0 + heightmap_size / 2;
+		float x = std::cos(i * 360.0 / num_points / 180.0 * M_PI) * heightmap_size / 4.0 + heightmap_size / 2;
+		float y = std::sin(i * 360.0 / num_points / 180.0 * M_PI) * heightmap_size / 4.0 + heightmap_size / 2;
 		float z = _heightmap.heightAt(x, y) + 4.0;
-		_path.addPoint(x, y, z);
+		path.addPoint(x, y, z);
 	}
+
+	_player.setPath(path);
 }
 
 void CubeScene::update()
 {
 	_heightmap.update();
-	_player_path_pos += 0.05;
+	_player.update();
 }
 
 Vector3 cameraPosAt(float ticks)
 {
 	Vector3 pos(
-		std::cos(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5 + std::sin(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
-		std::sin(ticks * 2.0 / 180.0 * PI) * heightmap_size / 2.5 + std::cos(ticks * 10.0 / 180.0 * PI) * heightmap_size / 16,
+		std::cos(ticks * 2.0 / 180.0 * M_PI) * heightmap_size / 2.5 + std::sin(ticks * 10.0 / 180.0 * M_PI) * heightmap_size / 16,
+		std::sin(ticks * 2.0 / 180.0 * M_PI) * heightmap_size / 2.5 + std::cos(ticks * 10.0 / 180.0 * M_PI) * heightmap_size / 16,
 		0.0
 	);
 	return pos;
@@ -60,9 +60,9 @@ void drawCamera()
 
 void lightHaxx(unsigned int light_number, float ticks, float z)
 {
-	float radius = std::sin(ticks / 360.0 * PI) * 50 + 25;
-	float x = heightmap_size / 2 + std::cos(ticks / 360.0 * PI) * radius;
-	float y = heightmap_size / 2 + std::sin(ticks / 360.0 * PI) * radius;
+	float radius = std::sin(ticks / 360.0 * M_PI) * 50 + 25;
+	float x = heightmap_size / 2 + std::cos(ticks / 360.0 * M_PI) * radius;
+	float y = heightmap_size / 2 + std::sin(ticks / 360.0 * M_PI) * radius;
 
 	GLfloat LightAmbient[]= { 0.0, 0.0, 0.0, 1.0f };
 	GLfloat LightDiffuse[]= { 1.0, 1.0, 1.0, 0.5 };
@@ -131,7 +131,7 @@ void CubeScene::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	Vector3 player_position(_path.positionAt(_player_path_pos));
+	Vector3 player_position = _player.positionAt();
 
 	// drawCamera();
 	gluLookAt(
@@ -150,12 +150,5 @@ void CubeScene::draw()
 	drawMaterial();
 	_heightmap.draw();
 
-	_path.draw();
-
-	glDisable(GL_LIGHTING);
-	glPointSize(50.0);
-	glBegin(GL_POINTS);
-		glVertex3f(player_position.x, player_position.y, player_position.z);
-	glEnd();
-	glEnable(GL_LIGHTING);
+	_player.draw();
 }
