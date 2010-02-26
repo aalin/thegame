@@ -12,7 +12,7 @@ class Player
 		void update();
 		void draw();
 
-		Vector3 positionAt(float offset = 0)
+		Vector3 positionAt(float offset = 0) const
 		{
 			return _path.positionAt(_path_position + offset);
 		}

@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 #include "opengl.hpp"
 #include "engine.hpp"
+#include <chipmunk.h>
 
 #ifdef __APPLE__
 int SDL_main(int argc, char *argv[])
@@ -10,6 +11,8 @@ int main(int argc, char *argv[])
 #endif
 {
 	Engine engine(1024, 768, false);
+
+	cpInitChipmunk();
 
 	try
 	{

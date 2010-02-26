@@ -1,5 +1,6 @@
 #include "level.hpp"
 #include <cmath>
+#include <iostream>
 
 Level::Level()
 	: _sky(256),
@@ -15,33 +16,71 @@ Level::Level()
 	}
 	_path.smoothen();
 	_path.setHeightsFromHeightmap(_heightmap);
-	_player.setPath(_path);
+
+	setupSpace();
+}
+
+void Level::setupSpace()
+{
+	_space = cpSpaceNew();
+	_space->iterations = 10;
+	_space->gravity = cpv(0, -5);
+	
+	_static_body = cpBodyNew(INFINITY, INFINITY);
+
+	cpShape* shape;
+	for(unsigned int i = 0; i < _path.length() - 1; i++)
+	{
+		Vector3 pos1(_path.positionAt(i));
+		Vector3 pos2(_path.positionAt(i + 1));
+		shape = cpSpaceAddStaticShape(_space, cpSegmentShapeNew(_static_body, cpv(i, pos1.z), cpv(i + 1, pos2.z), 0.0));
+		shape->e = 1.0;
+		shape->u = 1.0;
+	}
+
+	// Player
+
+	_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
+	_player_body->p = cpv(50, 50);
+
+	shape = cpSpaceAddShape(_space, cpCircleShapeNew(_player_body, 1.0, cpvzero));
+}
+
+Level::~Level()
+{
+	cpBodyFree(_static_body);
+	cpBodyFree(_player_body);
+	cpSpaceFreeChildren(_space);
+	cpSpaceFree(_space);
 }
 
 void Level::update()
 {
+	for(int i = 0; i < 2; i++)
+		cpSpaceStep(_space, 1.0 / 60.0 / 2);
+
 	_heightmap.update();
-	_player.update();
 }
 
 void drawLights()
 {
-	float ambient[]= { 0.0, 0.0, 0.0, 1.0f };
-	float diffuse[]= { 1.0, 1.0, 1.0, 0.5 };
-	float position[]= { 0, 0, 100, 1.0f };
+	float ambient[] = { 0.0, 0.0, 0.0, 1.0 };
+	float diffuse[] = { 1.0, 1.0, 1.0, 0.5 };
+	float pos[]     = { 0.0, 0.0, 100, 1.0 };
 
 	glLightfv(GL_LIGHT0, GL_AMBIENT, ambient);
 	glLightfv(GL_LIGHT0, GL_DIFFUSE, diffuse);
-	glLightfv(GL_LIGHT0, GL_POSITION, position);
+	glLightfv(GL_LIGHT0, GL_POSITION, pos);
 	glEnable(GL_LIGHT0);
 }
 
 void drawMaterial()
 {
-	float ambient[] = {1, 1, 1, 1.0};
-	float diffuse[] = {0.43, 0.47, 0.54, 1.0};
-	float specular[] = {0.33, 0.33, 0.53, 1.0};
-	float emission[] = {0.0, 0.0, 0.0, 0.0};
+	float ambient[]  = { 1.00, 1.00, 1.00, 1.00 };
+	float diffuse[]  = { 0.43, 0.47, 0.54, 1.00 };
+	float specular[] = { 0.33, 0.33, 0.53, 1.00 };
+	float emission[] = { 0.0, 0.0, 0.0, 0.0};
+
 	float shininess = 10.0;
 	glMaterialfv(GL_FRONT, GL_AMBIENT, ambient);
 	glMaterialfv(GL_FRONT, GL_DIFFUSE, diffuse);
@@ -61,24 +100,32 @@ void drawFog()
     glFogf(GL_FOG_END, 500.0);
 }
 
-void drawCamera(const Player& player)
+void Level::drawCamera()
 {
-	Vector3 player_position = player.positionAt();
+	Vector3 position(_path.positionAt(_player_body->p.x));
+	position.z = _player_body->p.y;
 
-	Vector3 player_direction;
-	player_direction += (player.positionAt(1.0) - player_position).normalize();
-	player_direction += (player.positionAt(3.0) - player_position).normalize() * 0.75;
-	player_direction += (player.positionAt(5.0) - player_position).normalize() * 0.50;
-	player_direction += (player.positionAt(7.0) - player_position).normalize() * 0.25;
-	player_direction += (player.positionAt(10.0) - player_position).normalize() * 0.25;
-	player_direction += (player.positionAt(15.0) - player_position).normalize() * 0.25;
-	player_direction.normalize();
+	Vector3 next(_path.positionAt(_player_body->p.x + 5.0));
+	next.z = _player_body->p.y;
+
+	Vector3 normal((next - position).normalize());
 
 	gluLookAt(
-		player_position.x + player_direction.x * -80, player_position.y + player_direction.y * -80, 40,
-		player_position.x, player_position.y, player_position.z,
+		position.x + normal.x * -80, position.y + normal.y * -80, 40,
+		position.x, position.y, position.z,
 		0.0, 0.0, 1.0
 	);
+}
+
+void Level::drawPlayer()
+{
+	Vector3 pos(_path.positionAt(_player_body->p.x));
+	pos.z = _player_body->p.y;
+
+	glPointSize(5.0);
+	glBegin(GL_POINTS);
+	glVertex3f(pos.x, pos.y, pos.z);
+	glEnd();
 }
 
 void Level::draw()
@@ -94,7 +141,7 @@ void Level::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	drawCamera(_player);
+	drawCamera();
 
 	_sky.draw();
 	drawLights();
@@ -103,6 +150,8 @@ void Level::draw()
 	drawMaterial();
 
 	_heightmap.draw();
-	_player.draw();
+	_path.draw();
+
+	drawPlayer();
 }
 
