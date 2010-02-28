@@ -13,6 +13,7 @@ Level::Level()
 		float z = _heightmap.heightAt(x, y) + 4.0;
 		_path.addPoint(x, y, z);
 	}
+	_path.smoothen();
 	_player.setPath(_path);
 }
 
@@ -59,6 +60,26 @@ void drawFog()
     glFogf(GL_FOG_END, 500.0);
 }
 
+void drawCamera(const Player& player)
+{
+	Vector3 player_position = player.positionAt();
+
+	Vector3 player_direction;
+	player_direction += (player.positionAt(1.0) - player_position).normalize();
+	player_direction += (player.positionAt(3.0) - player_position).normalize() * 0.75;
+	player_direction += (player.positionAt(5.0) - player_position).normalize() * 0.50;
+	player_direction += (player.positionAt(7.0) - player_position).normalize() * 0.25;
+	player_direction += (player.positionAt(10.0) - player_position).normalize() * 0.25;
+	player_direction += (player.positionAt(15.0) - player_position).normalize() * 0.25;
+	player_direction.normalize();
+
+	gluLookAt(
+		player_position.x + player_direction.x * -80, player_position.y + player_direction.y * -80, 40,
+		player_position.x, player_position.y, player_position.z,
+		0.0, 0.0, 1.0
+	);
+}
+
 void Level::draw()
 {
 	glEnable(GL_LIGHTING);
@@ -72,16 +93,7 @@ void Level::draw()
 	glMatrixMode(GL_MODELVIEW);
 	glLoadIdentity();
 
-	Vector3 player_position = _player.positionAt();
-	Vector3 player_direction = (_player.positionAt(1.0) - player_position).normalize();
-
-//	glTranslatef(128.0, 128.0, 0);
-
-	gluLookAt(
-		player_position.x + player_direction.x * -80, player_position.y + player_direction.y * -80, 40,
-		player_position.x, player_position.y, player_position.z,
-		0.0, 0.0, 1.0
-	);
+	drawCamera(_player);
 
 	_sky.draw();
 	drawLights();

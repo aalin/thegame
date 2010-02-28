@@ -16,6 +16,8 @@ class Path
 		float length() const;
 		Vector3 positionAt(float length) const;
 
+		void smoothen();
+
 	private:
 		std::vector<Vector3> _points;
 };
