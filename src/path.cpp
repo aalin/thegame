@@ -16,6 +16,16 @@ void Path::draw() const
 	glEnd();
 }
 
+struct SmoothInfo
+{
+	SmoothInfo(Vector3 a, Vector3 b) : a(a), b(b) { }
+
+	const Vector3 a;
+	const Vector3 b;
+	Vector3 delta() { return b - a; }
+	float length() { return std::fabs(delta().getMagnitude()); }
+};
+
 void Path::smoothen()
 {
 	// This is what I'm trying to do here.
@@ -25,29 +35,21 @@ void Path::smoothen()
 	std::vector<Vector3> points;
 	const int detail = 10;
 
-	for(unsigned int i = 0; i < _points.size() - 2; i += 2)
+	for(unsigned int i = 0; i < _points.size() - 3; i += 2)
 	{
-		const Vector3& a = _points[i];
-		const Vector3& b = _points[i+1];
-		const Vector3& c = _points[i+2];
-
-		Vector3 delta_ab(b - a);
-		Vector3 delta_bc(c - b);
-
-		float ab_length = std::fabs(delta_ab.getMagnitude());
-		float bc_length = std::fabs(delta_bc.getMagnitude());
+		SmoothInfo info1(_points[i], _points[i + 1]);
+		SmoothInfo info2(_points[i + 1], _points[i + 2]);
 
 		for(int j = 0; j < detail; j++)
 		{
 			float length_into = j / static_cast<float>(detail);
 
-			Vector3 one(a + delta_ab.normalize() * ab_length * length_into);
-			Vector3 two(b + delta_bc.normalize() * bc_length * length_into);
+			SmoothInfo inner(
+				Vector3(info1.a + info1.delta().normalize() * info1.length() * length_into),
+				Vector3(info1.b + info2.delta().normalize() * info2.length() * length_into)
+			);
 
-			Vector3 delta(two - one);
-			float new_length = std::fabs(delta.getMagnitude());
-
-			points.push_back(one + delta.normalize() * new_length * length_into);
+			points.push_back(inner.a + inner.delta().normalize() * inner.length() * length_into);
 		}
 	}
 
