@@ -15,6 +15,8 @@ class Heightmap
 
 		static Heightmap loadFromFile(std::string filename);
 
+		float interpolatedHeightAt(float x, float y) const;
+
 		float heightAt(unsigned int x, unsigned int y) const
 		{
 			return _heights.at(posToIndex(x, y));

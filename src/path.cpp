@@ -1,3 +1,4 @@
+#include "heightmap.hpp"
 #include "path.hpp"
 #include "opengl.hpp"
 #include <cmath>
@@ -35,25 +36,25 @@ void Path::smoothen()
 	std::vector<Vector3> points;
 	const int detail = 10;
 
-	for(unsigned int i = 0; i < _points.size() - 3; i += 2)
+	for(unsigned int i = 0; i < _points.size() - 2; i++)
 	{
-		SmoothInfo info1(_points[i], _points[i + 1]);
-		SmoothInfo info2(_points[i + 1], _points[i + 2]);
+		SmoothInfo info(_points.at(i), _points.at(i + 1));
 
 		for(int j = 0; j < detail; j++)
 		{
 			float length_into = j / static_cast<float>(detail);
 
-			SmoothInfo inner(
-				Vector3(info1.a + info1.delta().normalize() * info1.length() * length_into),
-				Vector3(info1.b + info2.delta().normalize() * info2.length() * length_into)
-			);
-
-			points.push_back(inner.a + inner.delta().normalize() * inner.length() * length_into);
+			points.push_back(info.a + info.delta().normalize() * info.length() * length_into);
 		}
 	}
 
 	_points = points;
+}
+
+void Path::setHeightsFromHeightmap(const Heightmap& heightmap)
+{
+	for(unsigned int i = 0; i < _points.size(); i++)
+		_points[i].z = heightmap.interpolatedHeightAt(_points[i].x, _points[i].y);
 }
 
 float Path::length() const

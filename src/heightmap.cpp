@@ -36,6 +36,17 @@ Heightmap::loadFromFile(std::string filename)
 	return heightmap;
 }
 
+float Heightmap::interpolatedHeightAt(float x, float y) const
+{
+	float dx = heightAt(x + 1, y) - heightAt(x, y);
+	float dy = heightAt(x, y + 1) - heightAt(x, y);
+
+	float percent_into_x = x - static_cast<int>(x);
+	float percent_into_y = y - static_cast<int>(y);
+
+	return heightAt(x, y) + dx * percent_into_x + dy * percent_into_y;
+}
+
 Vector3 Heightmap::surfaceNormal(unsigned int x, unsigned int y)
 {
 	if(x < 1 || x >= _width - 1 || y < 1 || y >= _height - 1)

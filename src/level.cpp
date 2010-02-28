@@ -14,6 +14,7 @@ Level::Level()
 		_path.addPoint(x, y, z);
 	}
 	_path.smoothen();
+	_path.setHeightsFromHeightmap(_heightmap);
 	_player.setPath(_path);
 }
 

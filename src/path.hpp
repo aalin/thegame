@@ -4,6 +4,8 @@
 #include <vector>
 #include "vector3.hpp"
 
+class Heightmap;
+
 class Path
 {
 	public:
@@ -17,6 +19,7 @@ class Path
 		Vector3 positionAt(float length) const;
 
 		void smoothen();
+		void setHeightsFromHeightmap(const Heightmap&);
 
 	private:
 		std::vector<Vector3> _points;
