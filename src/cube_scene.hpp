@@ -1,10 +1,7 @@
 #ifndef CUBE_SCENE_HPP
 #define CUBE_SCENE_HPP
 
-#include "opengl.hpp"
-#include "heightmap.hpp"
-#include "sky.hpp"
-#include "player.hpp"
+#include "level.hpp"
 
 class CubeScene
 {
@@ -14,12 +11,7 @@ class CubeScene
 		void draw();
 
 	private:
-		Sky _sky;
-		Heightmap _heightmap;
-		Player _player;
-		void drawLights();
-		void drawFog();
-		void drawMaterial();
+		Level _level;
 };
 
 #endif

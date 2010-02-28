@@ -22,6 +22,7 @@ set(SHARED_SOURCES
 	sky
 	path
 	player
+	level
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

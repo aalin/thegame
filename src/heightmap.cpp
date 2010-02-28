@@ -18,7 +18,8 @@ Heightmap::Heightmap(unsigned int width, unsigned int height)
 Heightmap
 Heightmap::loadFromFile(std::string filename)
 {
-	Image image(filename);
+	Image image(filename + ".heights.png");
+	Image colors(filename + ".colors.png");
 
 	Heightmap heightmap(image.getWidth(), image.getHeight());
 
@@ -28,7 +29,7 @@ Heightmap::loadFromFile(std::string filename)
 		{
 			float height = image.at(x, y).r * 40;
 			heightmap.setHeightAt(x, y, height);
-			heightmap.colorAt(x, y) = Color(std::sin(height / 40.0), std::cos(height / 40.0), std::sin(height / 80.0));
+			heightmap.colorAt(x, y) = colors.at(x, y);
 		}
 	}
 	
