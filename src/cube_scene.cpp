@@ -1,4 +1,5 @@
 #include "cube_scene.hpp"
+#include <SDL/SDL.h>
 #include <cmath>
 #include <iostream>
 
@@ -24,7 +25,7 @@ void CubeScene::setupSpace()
 {
 	_space = cpSpaceNew();
 	_space->iterations = 10;
-	_space->gravity = cpv(0, -5);
+	_space->gravity = cpv(0, -10);
 	
 	_static_body = cpBodyNew(INFINITY, INFINITY);
 
@@ -105,13 +106,25 @@ void CubeScene::drawCamera()
 	Vector3 position(_path.positionAt(_player_body->p.x));
 	position.z = _player_body->p.y;
 
-	Vector3 next(_path.positionAt(_player_body->p.x + 5.0));
+	Vector3 next(_path.positionAt(_player_body->p.x + 1.0));
 	next.z = _player_body->p.y;
 
-	Vector3 normal((next - position).normalize());
+	Vector3 normal;
+	for(int i = 0; i < 20; i++)
+		normal += (_path.positionAt(_player_body->p.x + i / 20.0 * 8.0) * Vector3(1.0, 1.0, 0.0) + Vector3(0.0, 0.0, _player_body->p.y) - position).normalize();
+	normal.normalize();
+
+	Vector3 camera_pos(
+		position.x + normal.x * -20,
+		position.y + normal.y * -20,
+		0.0
+	);
+
+	float height_at_pos = _heightmap.interpolatedHeightAt(camera_pos.x, camera_pos.y);
+	camera_pos.z = height_at_pos + 10.0;
 
 	gluLookAt(
-		position.x + normal.x * -80, position.y + normal.y * -80, 40,
+		camera_pos.x, camera_pos.y, camera_pos.z,
 		position.x, position.y, position.z,
 		0.0, 0.0, 1.0
 	);
@@ -158,6 +171,15 @@ void CubeScene::draw()
 void CubeScene::keyDown(unsigned int key)
 {
 	std::cout << "Key down: " << key << std::endl;
+	switch(key)
+	{
+		case SDLK_UP:
+			cpBodyApplyForce(_player_body, cpv(2.0, 0.0), cpv(0.0, 0.0));
+			break;
+		case SDLK_DOWN:
+			cpBodyApplyForce(_player_body, cpv(-2.0, 0.0), cpv(0.0, 0.0));
+			break;
+	}
 }
 
 void CubeScene::keyUp(unsigned int key)
