@@ -38,8 +38,13 @@ void Engine::handleInput()
 						quit();
 						break;
 					default:
+						_scene.keyDown(event.key.keysym.sym);
 						break;
 				}
+			}
+			else if(event.type == SDL_KEYUP)
+			{
+				_scene.keyUp(event.key.keysym.sym);
 			}
 		}
 	}
