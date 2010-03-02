@@ -21,6 +21,14 @@ CubeScene::CubeScene()
 	setupSpace();
 }
 
+void playerUpdateVelocity(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
+{
+	cpBodyUpdateVelocity(body, gravity, damping, dt);
+	body->v.x = cpfclamp(body->v.x, -5, 5);
+	body->v.y = cpfmax(body->v.y, -5);
+}
+
+
 void CubeScene::setupSpace()
 {
 	_space = cpSpaceNew();
@@ -43,8 +51,11 @@ void CubeScene::setupSpace()
 
 	_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
 	_player_body->p = cpv(50, 50);
+	_player_body->velocity_func = &playerUpdateVelocity;
 
 	shape = cpSpaceAddShape(_space, cpCircleShapeNew(_player_body, 1.0, cpvzero));
+	shape->e = 0.0;
+	shape->u = 0.5;
 }
 
 CubeScene::~CubeScene()
@@ -179,6 +190,9 @@ void CubeScene::keyDown(unsigned int key)
 		case SDLK_DOWN:
 			cpBodyApplyForce(_player_body, cpv(-2.0, 0.0), cpv(0.0, 0.0));
 			break;
+		case SDLK_SPACE:
+			 _player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(cpv(0.0, 1.0), cpv(0.0f, 1.0), 0.75), 10.0));
+			 break;
 	}
 }
 
