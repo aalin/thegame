@@ -19,6 +19,9 @@ CubeScene::CubeScene()
 	_path.setHeightsFromHeightmap(_heightmap);
 
 	setupSpace();
+
+	_arrow_direction = cpv(0, 0);
+	_last_jump_state = false;
 }
 
 void playerUpdateVelocity(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
@@ -28,34 +31,84 @@ void playerUpdateVelocity(cpBody *body, cpVect gravity, cpFloat damping, cpFloat
 	body->v.y = cpfmax(body->v.y, -5);
 }
 
+int begin(cpArbiter *arb, cpSpace* space, void* ignore)
+{
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	CubeScene* cube_scene = static_cast<CubeScene*>(a->data);
+
+	cpVect n = cpvneg(cpArbiterGetNormal(arb, 0));
+	if(n.y > 0.0)
+		cpArrayPush(cube_scene->_player_ground_shapes, b);
+
+	return 1;
+}
+
+int preSolve(cpArbiter *arb, cpSpace* space, void* ignore)
+{
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	CubeScene* cube_scene = static_cast<CubeScene*>(a->data);
+
+	if(arb->stamp > 0)
+	{
+		a->u = 1.0;
+
+		cpVect n = cpvneg(cpArbiterGetNormal(arb, 0));
+		if(n.y > cube_scene->_player_ground_normal.y)
+			cube_scene->_player_ground_normal = n;
+	}
+
+	return 1;
+}
+
+void separate(cpArbiter *arb, cpSpace* space, void* ignore)
+{
+	CP_ARBITER_GET_SHAPES(arb, a, b);
+	CubeScene* cube_scene = static_cast<CubeScene*>(a->data);
+
+	cpArrayDeleteObj(cube_scene->_player_ground_shapes, b);
+
+	if(cube_scene->_player_ground_shapes->num == 0)
+		a->u = 0.0;
+}
+
+void addGroundShape(cpSpace* space, cpBody* body, cpVect a, cpVect b)
+{
+	cpShape* shape = cpSpaceAddStaticShape(space, cpSegmentShapeNew(body, a, b, 0.0));
+	shape->e = 1.0;
+	shape->u = 1.0;
+	shape->collision_type = 2;
+}
 
 void CubeScene::setupSpace()
 {
 	_space = cpSpaceNew();
 	_space->iterations = 10;
-	_space->gravity = cpv(0, -10);
+	_space->gravity = cpv(0, -1500);
 	
 	_static_body = cpBodyNew(INFINITY, INFINITY);
 
-	cpShape* shape;
 	for(unsigned int i = 0; i < _path.length() - 1; i++)
 	{
 		Vector3 pos1(_path.positionAt(i));
 		Vector3 pos2(_path.positionAt(i + 1));
-		shape = cpSpaceAddStaticShape(_space, cpSegmentShapeNew(_static_body, cpv(i, pos1.z), cpv(i + 1, pos2.z), 0.0));
-		shape->e = 1.0;
-		shape->u = 1.0;
+		addGroundShape(_space, _static_body, cpv(i, pos1.z), cpv(i + 1, pos2.z));
 	}
 
 	// Player
 
 	_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
-	_player_body->p = cpv(50, 50);
+	_player_body->p = cpv(20.0, _path.positionAt(20.0).z + 1);
 	_player_body->velocity_func = &playerUpdateVelocity;
 
-	shape = cpSpaceAddShape(_space, cpCircleShapeNew(_player_body, 1.0, cpvzero));
-	shape->e = 0.0;
-	shape->u = 0.5;
+	_player_shape = cpSpaceAddShape(_space, cpCircleShapeNew(_player_body, 1.0, cpvzero));
+	_player_shape->e = 0.0;
+	_player_shape->u = 2.0;
+	_player_shape->collision_type = 1;
+	_player_shape->data = this;
+
+	_player_ground_shapes = cpArrayNew(0);
+
+	cpSpaceAddCollisionHandler(_space, 1, 2, &begin, &preSolve, 0, 0, this);
 }
 
 CubeScene::~CubeScene()
@@ -68,8 +121,27 @@ CubeScene::~CubeScene()
 
 void CubeScene::update()
 {
-	for(int i = 0; i < 2; i++)
-		cpSpaceStep(_space, 1.0 / 60.0 / 2);
+	if(_player_ground_normal.y > 0.0)
+		_player_shape->surface_v = cpvmult(cpvperp(_player_ground_normal), 200 * _arrow_direction.x);
+	else
+		_player_shape->surface_v = cpvzero;
+
+	bool jump_state = _arrow_direction.y > 0;
+
+	if(jump_state && !_last_jump_state && cpvlengthsq(_player_ground_normal))
+		_player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(_player_ground_normal, cpv(0.0, 1.0), 0.75), 5));
+
+	if(_player_ground_shapes->num == 0)
+	{
+		float air_accel = _player_body->v.x + _arrow_direction.x * 20.0;
+		_player_body->f.x = _player_body->m * air_accel;
+	}
+
+	_last_jump_state = jump_state;
+	_player_ground_normal = cpvzero;
+
+	for(int i = 0; i < 3; i++)
+		cpSpaceStep(_space, 1.0 / 60.0 / 3);
 
 	_heightmap.update();
 }
@@ -179,25 +251,31 @@ void CubeScene::draw()
 	drawPlayer();
 }
 
-void CubeScene::keyDown(unsigned int key)
+void CubeScene::updateArrowDirection(unsigned int key, int value)
 {
-	std::cout << "Key down: " << key << std::endl;
 	switch(key)
 	{
 		case SDLK_UP:
-			cpBodyApplyForce(_player_body, cpv(2.0, 0.0), cpv(0.0, 0.0));
+			_arrow_direction.x += value;
 			break;
 		case SDLK_DOWN:
-			cpBodyApplyForce(_player_body, cpv(-2.0, 0.0), cpv(0.0, 0.0));
+			_arrow_direction.x -= value;
 			break;
 		case SDLK_SPACE:
-			 _player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(cpv(0.0, 1.0), cpv(0.0f, 1.0), 0.75), 10.0));
+			_arrow_direction.y += value;
 			 break;
 	}
+}
+
+void CubeScene::keyDown(unsigned int key)
+{
+	std::cout << "Key down: " << key << std::endl;
+	updateArrowDirection(key, +1);
 }
 
 void CubeScene::keyUp(unsigned int key)
 {
 	std::cout << "Key up: " << key << std::endl;
+	updateArrowDirection(key, -1);
 }
 
