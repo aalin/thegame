@@ -7,14 +7,54 @@ CubeScene::CubeScene()
 	: _sky(256),
 	  _heightmap(Heightmap::loadFromFile("data/asd"))
 {
-	unsigned int num_points = 40;
-	for(unsigned int i = 0; i < num_points; i++)
-	{
-		float x = std::cos(i * 360.0 / num_points / 180.0 * M_PI) * 128 / 4.0 + 128 / 2;
-		float y = std::sin(i * 360.0 / num_points / 180.0 * M_PI) * 128 / 4.0 + 128 / 2;
-		float z = _heightmap.heightAt(x, y) + 4.0;
-		_path.addPoint(x, y, z);
-	}
+	_path.addPoint(97, 113.0, 0.0);
+	_path.addPoint(93, 119.5, 0.0);
+	_path.addPoint(85, 122.0, 0.0);
+	_path.addPoint(71, 116.0, 0.0);
+	_path.addPoint(68, 107.0, 0.0);
+	_path.addPoint(89, 94.5, 0.0);
+	_path.addPoint(83, 89.0, 0.0);
+	_path.addPoint(75, 59.0, 0.0);
+	_path.addPoint(91, 43.5, 0.0);
+	_path.addPoint(67, 24.5, 0.0);
+	_path.addPoint(69, 13.5, 0.0);
+	_path.addPoint(63, 7.5, 0.0);
+	_path.addPoint(93, 4.0, 0.0);
+	_path.addPoint(108, 12.5, 0.0);
+	_path.addPoint(138, 9.5, 0.0);
+	_path.addPoint(143, 18.0, 0.0);
+	_path.addPoint(154, 22.5, 0.0);
+	_path.addPoint(157, 26.0, 0.0);
+	_path.addPoint(169, 28.0, 0.0);
+	_path.addPoint(170, 32.0, 0.0);
+	_path.addPoint(158, 34.5, 0.0);
+	_path.addPoint(151, 46.0, 0.0);
+	_path.addPoint(174, 52.0, 0.0);
+	_path.addPoint(193, 45.0, 0.0);
+	_path.addPoint(215, 19.5, 0.0);
+	_path.addPoint(226, 18.0, 0.0);
+	_path.addPoint(232, 25.5, 0.0);
+	_path.addPoint(227, 38.5, 0.0);
+	_path.addPoint(243, 46.0, 0.0);
+	_path.addPoint(245, 51.0, 0.0);
+	_path.addPoint(231, 55.5, 0.0);
+	_path.addPoint(230, 60.5, 0.0);
+	_path.addPoint(241, 65.5, 0.0);
+	_path.addPoint(239, 74.0, 0.0);
+	_path.addPoint(213, 84.5, 0.0);
+	_path.addPoint(213, 88.5, 0.0);
+	_path.addPoint(197, 96.0, 0.0);
+	_path.addPoint(214, 102.5, 0.0);
+	_path.addPoint(217, 118.0, 0.0);
+	_path.addPoint(210, 120.0, 0.0);
+	_path.addPoint(177, 106.0, 0.0);
+	_path.addPoint(163, 104.0, 0.0);
+	_path.addPoint(155, 100.0, 0.0);
+	_path.addPoint(161, 91.0, 0.0);
+	_path.addPoint(180, 78.5, 0.0);
+	_path.addPoint(181, 72.5, 0.0);
+	_path.addPoint(171, 68.0, 0.0);
+
 	_path.smoothen();
 	_path.setHeightsFromHeightmap(_heightmap);
 
@@ -83,7 +123,7 @@ void CubeScene::setupSpace()
 {
 	_space = cpSpaceNew();
 	_space->iterations = 10;
-	_space->gravity = cpv(0, -1500);
+	_space->gravity = cpv(0, -300);
 	
 	_static_body = cpBodyNew(INFINITY, INFINITY);
 
@@ -129,7 +169,9 @@ void CubeScene::update()
 	bool jump_state = _arrow_direction.y > 0;
 
 	if(jump_state && !_last_jump_state && cpvlengthsq(_player_ground_normal))
-		_player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(_player_ground_normal, cpv(0.0, 1.0), 0.75), 5));
+	{
+ 		_player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(_player_ground_normal, cpv(0.0, 1.0), 0.75), 50));
+	}
 
 	if(_player_ground_shapes->num == 0)
 	{
@@ -205,6 +247,10 @@ void CubeScene::drawCamera()
 
 	float height_at_pos = _heightmap.interpolatedHeightAt(camera_pos.x, camera_pos.y);
 	camera_pos.z = height_at_pos + 10.0;
+
+	camera_pos.x = -5.0;
+	camera_pos.y = -5.0;
+	camera_pos.z = 100.0;
 
 	gluLookAt(
 		camera_pos.x, camera_pos.y, camera_pos.z,

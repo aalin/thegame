@@ -9,6 +9,7 @@ Trying to make a game for an idea I have.
 ## Heightmap
 
 * Textures.
+* Fix the coordinates.
 
 ## Sky
 
