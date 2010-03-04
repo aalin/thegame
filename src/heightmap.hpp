@@ -37,6 +37,10 @@ class Heightmap
 			return _colors.at(posToIndex(x, y));
 		}
 
+		// FIXME: These names might be confusing.
+		unsigned int width() const { return _width; }
+		unsigned int height() const { return _height; }
+
 		void update();
 		void draw();
 

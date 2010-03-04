@@ -248,9 +248,10 @@ void CubeScene::drawCamera()
 	float height_at_pos = _heightmap.interpolatedHeightAt(camera_pos.x, camera_pos.y);
 	camera_pos.z = height_at_pos + 10.0;
 
+	// Temporary, until the heightmap is properly unmirrored.
 	camera_pos.x = -5.0;
 	camera_pos.y = -5.0;
-	camera_pos.z = 100.0;
+	camera_pos.z = 50.0;
 
 	gluLookAt(
 		camera_pos.x, camera_pos.y, camera_pos.z,
@@ -285,7 +286,10 @@ void CubeScene::draw()
 
 	drawCamera();
 
-	_sky.draw();
+	glPushMatrix();
+		glTranslatef(_heightmap.width() / 2.0, _heightmap.height() / 2.0, -40);
+		_sky.draw();
+	glPopMatrix();
 	drawLights();
 	drawFog();
 
