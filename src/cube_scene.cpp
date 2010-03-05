@@ -7,53 +7,53 @@ CubeScene::CubeScene()
 	: _sky(256),
 	  _heightmap(Heightmap::loadFromFile("data/asd"))
 {
-	_path.addPoint(97, 113.0, 0.0);
-	_path.addPoint(93, 119.5, 0.0);
-	_path.addPoint(85, 122.0, 0.0);
-	_path.addPoint(71, 116.0, 0.0);
-	_path.addPoint(68, 107.0, 0.0);
-	_path.addPoint(89, 94.5, 0.0);
-	_path.addPoint(83, 89.0, 0.0);
-	_path.addPoint(75, 59.0, 0.0);
-	_path.addPoint(91, 43.5, 0.0);
-	_path.addPoint(67, 24.5, 0.0);
-	_path.addPoint(69, 13.5, 0.0);
-	_path.addPoint(63, 7.5, 0.0);
-	_path.addPoint(93, 4.0, 0.0);
-	_path.addPoint(108, 12.5, 0.0);
-	_path.addPoint(138, 9.5, 0.0);
-	_path.addPoint(143, 18.0, 0.0);
-	_path.addPoint(154, 22.5, 0.0);
-	_path.addPoint(157, 26.0, 0.0);
-	_path.addPoint(169, 28.0, 0.0);
-	_path.addPoint(170, 32.0, 0.0);
-	_path.addPoint(158, 34.5, 0.0);
-	_path.addPoint(151, 46.0, 0.0);
-	_path.addPoint(174, 52.0, 0.0);
-	_path.addPoint(193, 45.0, 0.0);
-	_path.addPoint(215, 19.5, 0.0);
-	_path.addPoint(226, 18.0, 0.0);
-	_path.addPoint(232, 25.5, 0.0);
-	_path.addPoint(227, 38.5, 0.0);
-	_path.addPoint(243, 46.0, 0.0);
-	_path.addPoint(245, 51.0, 0.0);
-	_path.addPoint(231, 55.5, 0.0);
-	_path.addPoint(230, 60.5, 0.0);
-	_path.addPoint(241, 65.5, 0.0);
-	_path.addPoint(239, 74.0, 0.0);
-	_path.addPoint(213, 84.5, 0.0);
-	_path.addPoint(213, 88.5, 0.0);
-	_path.addPoint(197, 96.0, 0.0);
-	_path.addPoint(214, 102.5, 0.0);
-	_path.addPoint(217, 118.0, 0.0);
-	_path.addPoint(210, 120.0, 0.0);
-	_path.addPoint(177, 106.0, 0.0);
-	_path.addPoint(163, 104.0, 0.0);
-	_path.addPoint(155, 100.0, 0.0);
-	_path.addPoint(161, 91.0, 0.0);
-	_path.addPoint(180, 78.5, 0.0);
-	_path.addPoint(181, 72.5, 0.0);
-	_path.addPoint(171, 68.0, 0.0);
+	_path.addPoint(97, 30, 0.0);
+	_path.addPoint(93, 17, 0.0);
+	_path.addPoint(85, 12, 0.0);
+	_path.addPoint(71, 24, 0.0);
+	_path.addPoint(68, 42, 0.0);
+	_path.addPoint(89, 67, 0.0);
+	_path.addPoint(83, 78, 0.0);
+	_path.addPoint(75, 138, 0.0);
+	_path.addPoint(91, 169, 0.0);
+	_path.addPoint(67, 207, 0.0);
+	_path.addPoint(69, 229, 0.0);
+	_path.addPoint(63, 241, 0.0);
+	_path.addPoint(93, 248, 0.0);
+	_path.addPoint(108, 231, 0.0);
+	_path.addPoint(138, 237, 0.0);
+	_path.addPoint(143, 220, 0.0);
+	_path.addPoint(154, 211, 0.0);
+	_path.addPoint(157, 204, 0.0);
+	_path.addPoint(169, 200, 0.0);
+	_path.addPoint(170, 192, 0.0);
+	_path.addPoint(158, 187, 0.0);
+	_path.addPoint(151, 164, 0.0);
+	_path.addPoint(174, 152, 0.0);
+	_path.addPoint(193, 166, 0.0);
+	_path.addPoint(215, 217, 0.0);
+	_path.addPoint(226, 220, 0.0);
+	_path.addPoint(232, 205, 0.0);
+	_path.addPoint(227, 179, 0.0);
+	_path.addPoint(243, 164, 0.0);
+	_path.addPoint(245, 154, 0.0);
+	_path.addPoint(231, 145, 0.0);
+	_path.addPoint(230, 135, 0.0);
+	_path.addPoint(241, 125, 0.0);
+	_path.addPoint(239, 108, 0.0);
+	_path.addPoint(213, 87, 0.0);
+	_path.addPoint(213, 79, 0.0);
+	_path.addPoint(197, 64, 0.0);
+	_path.addPoint(214, 51, 0.0);
+	_path.addPoint(217, 20, 0.0);
+	_path.addPoint(210, 16, 0.0);
+	_path.addPoint(177, 44, 0.0);
+	_path.addPoint(163, 48, 0.0);
+	_path.addPoint(155, 56, 0.0);
+	_path.addPoint(161, 74, 0.0);
+	_path.addPoint(180, 99, 0.0);
+	_path.addPoint(181, 111, 0.0);
+	_path.addPoint(171, 120, 0.0);
 
 	_path.smoothen();
 	_path.setHeightsFromHeightmap(_heightmap);
@@ -247,11 +247,6 @@ void CubeScene::drawCamera()
 
 	float height_at_pos = _heightmap.interpolatedHeightAt(camera_pos.x, camera_pos.y);
 	camera_pos.z = height_at_pos + 10.0;
-
-	// Temporary, until the heightmap is properly unmirrored.
-	camera_pos.x = -5.0;
-	camera_pos.y = -5.0;
-	camera_pos.z = 50.0;
 
 	gluLookAt(
 		camera_pos.x, camera_pos.y, camera_pos.z,

@@ -27,9 +27,11 @@ Heightmap::loadFromFile(std::string filename)
 	{
 		for(size_t x = 0; x < image.getWidth() - 1; x++)
 		{
-			float height = image.at(x, y).r * 40;
+			size_t real_x = x;
+			size_t real_y = image.getHeight() - y - 1;
+			float height = image.at(real_x, real_y).r * 40;
 			heightmap.setHeightAt(x, y, height);
-			heightmap.colorAt(x, y) = colors.at(x, y);
+			heightmap.colorAt(x, y) = colors.at(real_x, real_y);
 		}
 	}
 	
@@ -38,6 +40,9 @@ Heightmap::loadFromFile(std::string filename)
 
 float Heightmap::interpolatedHeightAt(float x, float y) const
 {
+	if(x >= _width - 1 || y >= _width - 1 || x < 0 || y < 0)
+		return 0;
+
 	float dx = heightAt(x + 1, y) - heightAt(x, y);
 	float dy = heightAt(x, y + 1) - heightAt(x, y);
 
