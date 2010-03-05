@@ -235,8 +235,15 @@ void CubeScene::drawCamera()
 	next.z = _player_body->p.y;
 
 	Vector3 normal;
-	for(int i = 0; i < 20; i++)
-		normal += (_path.positionAt(_player_body->p.x + i / 20.0 * 8.0) * Vector3(1.0, 1.0, 0.0) + Vector3(0.0, 0.0, _player_body->p.y) - position).normalize();
+
+	for(int i = 0; i < 10; i++)
+	{
+		float offset = _player_body->p.x + i * 4.0;
+		if(offset < 0.0) offset = 0.0;
+		Vector3 offset_pos = _path.positionAt(offset) * Vector3(1.0, 1.0, 0.0) + Vector3(0.0, 0.0, _player_body->p.y);
+		normal += (offset_pos - position).normalize() * std::cos(i / 20.0 * M_PI);
+	}
+
 	normal.normalize();
 
 	Vector3 camera_pos(
@@ -245,7 +252,9 @@ void CubeScene::drawCamera()
 		0.0
 	);
 
-	float height_at_pos = _heightmap.interpolatedHeightAt(camera_pos.x, camera_pos.y);
+	float px = (camera_pos.x < 1.0) ? 1.0 : (camera_pos.x > _heightmap.width() - 2 ? _heightmap.width() - 2: camera_pos.x);
+	float py = (camera_pos.y < 1.0) ? 1.0 : (camera_pos.y > _heightmap.height() - 2 ? _heightmap.height() - 2: camera_pos.y);
+	float height_at_pos = _heightmap.interpolatedHeightAt(px, py);
 	camera_pos.z = height_at_pos + 10.0;
 
 	gluLookAt(
