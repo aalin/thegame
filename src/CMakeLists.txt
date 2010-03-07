@@ -24,7 +24,6 @@ set(SHARED_SOURCES
 	engine
 	heightmap
 	cube_scene
-	shader_program
 	vector3
 	util
 	image
