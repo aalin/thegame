@@ -2,6 +2,7 @@
 #include "path.hpp"
 #include "opengl.hpp"
 #include <cmath>
+#include <iostream>
 
 void Path::draw() const
 {
@@ -15,6 +16,7 @@ void Path::draw() const
 		for(std::vector<Vector3>::const_iterator it = _points.begin(); it != _points.end(); it++)
 			glVertex3f(it->x, it->y, it->z);
 	glEnd();
+
 }
 
 struct SmoothInfo
@@ -29,23 +31,21 @@ struct SmoothInfo
 
 void Path::smoothen()
 {
-	// This is what I'm trying to do here.
-	// http://en.wikipedia.org/wiki/B%C3%A9zier_curve#Quadratic_curves
-	//
-	// TODO: Higher-order curves
 	std::vector<Vector3> points;
-	const int detail = 10;
 
-	for(unsigned int i = 0; i < _points.size() - 2; i++)
+	unsigned int smooth_length = 30;
+	float len = length();
+	for(float i = 0.0; i < len - smooth_length - 1; i += 1)
 	{
-		SmoothInfo info(_points.at(i), _points.at(i + 1));
+		Vector3 a(positionAt(i));
 
-		for(int j = 0; j < detail; j++)
-		{
-			float length_into = j / static_cast<float>(detail);
+		Vector3 normal;
+		for(unsigned int j = 0; j < smooth_length; j++)
+			normal += SmoothInfo(a, positionAt(i + j)).delta().normalize() * (j / static_cast<float>(smooth_length));
 
-			points.push_back(info.a + info.delta().normalize() * info.length() * length_into);
-		}
+		SmoothInfo info(a, positionAt(i + smooth_length));
+		Vector3 v(info.a + normal.normalize() * info.length() * 0.5);
+		points.push_back(v);
 	}
 
 	_points = points;
