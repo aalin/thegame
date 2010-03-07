@@ -239,7 +239,8 @@ void CubeScene::drawCamera()
 	for(int i = 0; i < 10; i++)
 	{
 		float offset = _player_body->p.x + i * 4.0;
-		if(offset < 0.0) offset = 0.0;
+		if(offset < 0.0) continue; // offset = 0.0;
+		if(offset > _path.length()) break;
 		Vector3 offset_pos = _path.positionAt(offset) * Vector3(1.0, 1.0, 0.0) + Vector3(0.0, 0.0, _player_body->p.y);
 		normal += (offset_pos - position).normalize() * std::cos(i / 20.0 * M_PI);
 	}
