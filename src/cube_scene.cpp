@@ -141,7 +141,7 @@ void CubeScene::setupSpace()
 	// Player
 
 	//_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
-	_player_body = cpSpaceAddBody(_space, cpBodyNew(80.0, 1.0));
+	_player_body = cpSpaceAddBody(_space, cpBodyNew(80.0, 0.5));
 	_player_body->p = cpv(20.0, _path.positionAt(20.0).z + 1);
 	_player_body->velocity_func = &playerUpdateVelocity;
 
@@ -266,7 +266,7 @@ void drawCircle(float radius, bool draw_from_center)
 	glBegin(GL_LINE_STRIP);
 	if(draw_from_center)
 		glVertex3f(0.0, 0.0, 0.0);
-	const int detail = 8;
+	const int detail = 16;
 	for(int i = 0; i <= detail; i++)
 	{
 		glVertex3f(
@@ -281,19 +281,20 @@ void drawCircle(float radius, bool draw_from_center)
 void CubeScene::drawPlayer()
 {
 	Vector3 pos(_path.positionAt(_player_body->p.x));
-	Vector3 normal;
-	for(int x = 0; x < 5; x++)
-		normal += (_path.positionAt(_player_body->p.x + x) - pos).normalize() * (x / 5.0);
+	Vector3 normal(_path.positionAt(_player_body->p.x + 1.0) * Vector3(1.0, 1.0, 0.0) - (pos * Vector3(1.0, 1.0, 0.0)));
 	normal.normalize();
-	normal *= 180.0;
+	std::cout << _player_body->p.x << std::endl;
 
 	pos.z = _player_body->p.y;
 
+	glDisable(GL_LIGHTING);
 	glPushMatrix();
 		glTranslatef(pos.x, pos.y, pos.z);
-		glRotatef(0.0, 0.0, 0.0 - _player_body->a, 1.0);
+		glRotatef(std::acos(normal.x) * 180 / M_PI, 0.0, 0.0, 1.0);
+		glRotatef(-_player_body->a * 180 / M_PI, 0.0, 1.0, 0.0);
 		drawCircle(1.0, true);
 	glPopMatrix();
+	glEnable(GL_LIGHTING);
 }
 
 void CubeScene::draw()
