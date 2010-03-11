@@ -283,7 +283,6 @@ void CubeScene::drawPlayer()
 	Vector3 pos(_path.positionAt(_player_body->p.x));
 	Vector3 normal(_path.positionAt(_player_body->p.x + 1.0) * Vector3(1.0, 1.0, 0.0) - (pos * Vector3(1.0, 1.0, 0.0)));
 	normal.normalize();
-	std::cout << _player_body->p.x << std::endl;
 
 	pos.z = _player_body->p.y;
 
