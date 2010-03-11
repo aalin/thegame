@@ -30,6 +30,7 @@ set(SHARED_SOURCES
 	sky
 	path
 	player
+	stone
 )
 
 set(MAIN_SOURCES main ${SHARED_SOURCES})

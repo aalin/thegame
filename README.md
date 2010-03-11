@@ -24,7 +24,3 @@ Trying to make a game for an idea I have.
 * Clouds?
 * Different colors?
 
-## Path
-
-* Smoothing (splines)
-

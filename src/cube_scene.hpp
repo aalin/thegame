@@ -5,6 +5,7 @@
 #include "path.hpp"
 #include "sky.hpp"
 #include "heightmap.hpp"
+#include "stone.hpp"
 #include <chipmunk.h>
 
 class CubeScene
@@ -38,6 +39,8 @@ class CubeScene
 		cpVect _arrow_direction;
 
 		bool _last_jump_state;
+
+		std::vector<boost::shared_ptr<Stone> > _stones;
 };
 
 #endif

@@ -2,6 +2,7 @@
 #include <SDL/SDL.h>
 #include <cmath>
 #include <iostream>
+#include <boost/foreach.hpp>
 
 CubeScene::CubeScene()
 	: _sky(256),
@@ -60,6 +61,9 @@ CubeScene::CubeScene()
 
 	setupSpace();
 
+	for(unsigned int i = 0; i < 10; i++)
+		_stones.push_back(boost::shared_ptr<Stone>(new Stone(_space, i / (20.0 + 10) * _path.length())));
+
 	_arrow_direction = cpv(0, 0);
 	_last_jump_state = false;
 }
@@ -67,8 +71,8 @@ CubeScene::CubeScene()
 void playerUpdateVelocity(cpBody *body, cpVect gravity, cpFloat damping, cpFloat dt)
 {
 	cpBodyUpdateVelocity(body, gravity, damping, dt);
-	body->v.x = cpfclamp(body->v.x, -5, 5);
-	body->v.y = cpfmax(body->v.y, -5);
+	body->v.x = cpfclamp(body->v.x, -10, 10);
+	body->v.y = cpfmax(body->v.y, -10);
 }
 
 int begin(cpArbiter *arb, cpSpace* space, void* ignore)
@@ -123,7 +127,7 @@ void CubeScene::setupSpace()
 {
 	_space = cpSpaceNew();
 	_space->iterations = 10;
-	_space->gravity = cpv(0, -300);
+	_space->gravity = cpv(0, -10);
 	
 	_static_body = cpBodyNew(INFINITY, INFINITY);
 
@@ -136,12 +140,13 @@ void CubeScene::setupSpace()
 
 	// Player
 
-	_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
+	//_player_body = cpSpaceAddBody(_space, cpBodyNew(10.0, INFINITY));
+	_player_body = cpSpaceAddBody(_space, cpBodyNew(80.0, 1.0));
 	_player_body->p = cpv(20.0, _path.positionAt(20.0).z + 1);
 	_player_body->velocity_func = &playerUpdateVelocity;
 
 	_player_shape = cpSpaceAddShape(_space, cpCircleShapeNew(_player_body, 1.0, cpvzero));
-	_player_shape->e = 0.0;
+	_player_shape->e = 0.1;
 	_player_shape->u = 2.0;
 	_player_shape->collision_type = 1;
 	_player_shape->data = this;
@@ -161,22 +166,13 @@ CubeScene::~CubeScene()
 
 void CubeScene::update()
 {
-	if(_player_ground_normal.y > 0.0)
-		_player_shape->surface_v = cpvmult(cpvperp(_player_ground_normal), 200 * _arrow_direction.x);
-	else
-		_player_shape->surface_v = cpvzero;
+	cpBodyApplyImpulse(_player_body, cpv(_arrow_direction.x * 5.0, 0.0), cpvzero);
 
 	bool jump_state = _arrow_direction.y > 0;
 
 	if(jump_state && !_last_jump_state && cpvlengthsq(_player_ground_normal))
 	{
- 		_player_body->v = cpvadd(_player_body->v, cpvmult(cpvslerp(_player_ground_normal, cpv(0.0, 1.0), 0.75), 50));
-	}
-
-	if(_player_ground_shapes->num == 0)
-	{
-		float air_accel = _player_body->v.x + _arrow_direction.x * 20.0;
-		_player_body->f.x = _player_body->m * air_accel;
+		cpBodyApplyImpulse(_player_body, cpv(0.0, 300.0), cpv(0.0, 0.0));
 	}
 
 	_last_jump_state = jump_state;
@@ -248,15 +244,15 @@ void CubeScene::drawCamera()
 	normal.normalize();
 
 	Vector3 camera_pos(
-		position.x + normal.x * -20,
-		position.y + normal.y * -20,
+		position.x + normal.x * -10,
+		position.y + normal.y * -10,
 		0.0
 	);
 
 	float px = (camera_pos.x < 1.0) ? 1.0 : (camera_pos.x > _heightmap.width() - 2 ? _heightmap.width() - 2: camera_pos.x);
 	float py = (camera_pos.y < 1.0) ? 1.0 : (camera_pos.y > _heightmap.height() - 2 ? _heightmap.height() - 2: camera_pos.y);
 	float height_at_pos = _heightmap.interpolatedHeightAt(px, py);
-	camera_pos.z = height_at_pos + 10.0;
+	camera_pos.z = height_at_pos + 5.0;
 
 	gluLookAt(
 		camera_pos.x, camera_pos.y, camera_pos.z,
@@ -265,15 +261,39 @@ void CubeScene::drawCamera()
 	);
 }
 
+void drawCircle(float radius, bool draw_from_center)
+{
+	glBegin(GL_LINE_STRIP);
+	if(draw_from_center)
+		glVertex3f(0.0, 0.0, 0.0);
+	const int detail = 8;
+	for(int i = 0; i <= detail; i++)
+	{
+		glVertex3f(
+			std::cos(i * 360 / detail / 180.0 * M_PI) * radius,
+			0.0,
+			std::sin(i * 360.0 / detail / 180.0 * M_PI) * radius
+		);
+	}
+	glEnd();
+}
+
 void CubeScene::drawPlayer()
 {
 	Vector3 pos(_path.positionAt(_player_body->p.x));
+	Vector3 normal;
+	for(int x = 0; x < 5; x++)
+		normal += (_path.positionAt(_player_body->p.x + x) - pos).normalize() * (x / 5.0);
+	normal.normalize();
+	normal *= 180.0;
+
 	pos.z = _player_body->p.y;
 
-	glPointSize(5.0);
-	glBegin(GL_POINTS);
-	glVertex3f(pos.x, pos.y, pos.z);
-	glEnd();
+	glPushMatrix();
+		glTranslatef(pos.x, pos.y, pos.z);
+		glRotatef(0.0, 0.0, 0.0 - _player_body->a, 1.0);
+		drawCircle(1.0, true);
+	glPopMatrix();
 }
 
 void CubeScene::draw()
@@ -304,6 +324,15 @@ void CubeScene::draw()
 	_path.draw();
 
 	drawPlayer();
+
+	BOOST_FOREACH(boost::shared_ptr<Stone> stoneptr, _stones)
+	{
+		Vector3 pos = _path.positionAt(stoneptr->x());
+		glPushMatrix();
+			glTranslatef(pos.x, pos.y, stoneptr->y());
+			drawCircle(stoneptr->radius(), false);
+		glPopMatrix();
+	}
 }
 
 void CubeScene::updateArrowDirection(unsigned int key, int value)
