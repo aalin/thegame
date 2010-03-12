@@ -9,12 +9,12 @@ void Path::draw() const
 	glColor3f(1.0, 1.0, 1.0);
 	glBegin(GL_LINE_STRIP);
 		for(std::vector<Vector3>::const_iterator it = _points.begin(); it != _points.end(); it++)
-			glVertex3f(it->x, it->y, it->z);
+			glVertex3f(it->x, it->y, it->z + 0.1);
 	glEnd();
 	glPointSize(5.0);
 	glBegin(GL_POINTS);
 		for(std::vector<Vector3>::const_iterator it = _points.begin(); it != _points.end(); it++)
-			glVertex3f(it->x, it->y, it->z);
+			glVertex3f(it->x, it->y, it->z + 0.1);
 	glEnd();
 
 }

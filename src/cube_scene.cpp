@@ -177,7 +177,7 @@ CubeScene::~CubeScene()
 
 void CubeScene::update()
 {
-	cpBodyApplyImpulse(_player_body, cpv(_arrow_direction.x * 5.0, 0.0), cpvzero);
+	cpBodyApplyImpulse(_player_body, cpv(_arrow_direction.x * 15.0, 0.0), cpvzero);
 
 	bool jump_state = _arrow_direction.y > 0;
 

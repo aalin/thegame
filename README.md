@@ -2,7 +2,7 @@
 
 Trying to make a game for an idea I have.
 
-![Screenshot](http://i.imgur.com/mjHik.png)
+![Screenshot](http://i.imgur.com/IGZ3Q.png)
 
 # Dependencies
 
@@ -14,6 +14,12 @@ Trying to make a game for an idea I have.
 * [Chipmunk](http://code.google.com/p/chipmunk-physics/) (unpack it in src/chipmunk/)
 
 # Todo
+
+## Player
+
+* Add shapes.
+* 3D-drawing.
+* Textures.
 
 ## Heightmap
 
