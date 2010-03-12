@@ -51,6 +51,21 @@ void Path::smoothen()
 	_points = points;
 }
 
+Vector3 Path::normalAt(float position) const
+{
+	return (
+		positionAt(position + 1.0) * Vector3(1.0, 1.0, 0.0) -
+		positionAt(position)       * Vector3(1.0, 1.0, 0.0)
+	).normalize();
+}
+
+float Path::angleAt(float position) const
+{
+	Vector3 normal(normalAt(position));
+	float angle = std::acos(normal.x) * 180 / M_PI;
+	return (normal.y < 0) ? 360 - angle : angle;
+}
+
 void Path::setHeightsFromHeightmap(const Heightmap& heightmap)
 {
 	for(unsigned int i = 0; i < _points.size(); i++)

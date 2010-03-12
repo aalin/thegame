@@ -21,6 +21,9 @@ class Path
 		void smoothen();
 		void setHeightsFromHeightmap(const Heightmap&);
 
+		Vector3 normalAt(float position) const;
+		float angleAt(float position) const;
+
 	private:
 		std::vector<Vector3> _points;
 };

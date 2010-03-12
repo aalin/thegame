@@ -172,7 +172,7 @@ void CubeScene::update()
 
 	if(jump_state && !_last_jump_state && cpvlengthsq(_player_ground_normal))
 	{
-		cpBodyApplyImpulse(_player_body, cpv(0.0, 300.0), cpv(0.0, 0.0));
+		cpBodyApplyImpulse(_player_body, cpv(0.0, 600.0), cpv(0.0, 0.0));
 	}
 
 	_last_jump_state = jump_state;
@@ -281,15 +281,16 @@ void drawCircle(float radius, bool draw_from_center)
 void CubeScene::drawPlayer()
 {
 	Vector3 pos(_path.positionAt(_player_body->p.x));
-	Vector3 normal(_path.positionAt(_player_body->p.x + 1.0) * Vector3(1.0, 1.0, 0.0) - (pos * Vector3(1.0, 1.0, 0.0)));
-	normal.normalize();
 
 	pos.z = _player_body->p.y;
+
+	float angle = _path.angleAt(_player_body->p.x);
 
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
 		glTranslatef(pos.x, pos.y, pos.z);
-		glRotatef(std::acos(normal.x) * 180 / M_PI, 0.0, 0.0, 1.0);
+		// glRotatef(std::asin(normal.y) * 180 / M_PI, 1.0, 0.0, 0.0);
+		glRotatef(angle, 0.0, 0.0, 1.0);
 		glRotatef(-_player_body->a * 180 / M_PI, 0.0, 1.0, 0.0);
 		drawCircle(1.0, true);
 	glPopMatrix();
