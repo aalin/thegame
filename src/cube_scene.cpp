@@ -62,7 +62,13 @@ CubeScene::CubeScene()
 	setupSpace();
 
 	for(unsigned int i = 0; i < 10; i++)
-		_stones.push_back(boost::shared_ptr<Stone>(new Stone(_space, i / (20.0 + 10) * _path.length())));
+	{
+		float x = i / (20.0 + 10) * _path.length();
+		float radius = static_cast<float>(std::rand()) / RAND_MAX;
+		std::cout << radius << std::endl;
+		boost::shared_ptr<Stone> stone_ptr(new Stone(_space, x, radius));
+		_stones.push_back(stone_ptr);
+	}
 
 	_arrow_direction = cpv(0, 0);
 	_last_jump_state = false;
@@ -130,6 +136,11 @@ void CubeScene::setupSpace()
 	_space->gravity = cpv(0, -10);
 	
 	_static_body = cpBodyNew(INFINITY, INFINITY);
+
+	addGroundShape(_space, _static_body, cpv(0.0, 100), cpv(0.0, _path.positionAt(0.0).z));
+	addGroundShape(_space, _static_body, cpv(_path.length(), 100), cpv(_path.length(), _path.positionAt(_path.length()).z));
+	Vector3 end_pos = _path.positionAt(_path.length());
+
 
 	for(unsigned int i = 0; i < _path.length() - 1; i++)
 	{
@@ -289,7 +300,6 @@ void CubeScene::drawPlayer()
 	glDisable(GL_LIGHTING);
 	glPushMatrix();
 		glTranslatef(pos.x, pos.y, pos.z);
-		// glRotatef(std::asin(normal.y) * 180 / M_PI, 1.0, 0.0, 0.0);
 		glRotatef(angle, 0.0, 0.0, 1.0);
 		glRotatef(-_player_body->a * 180 / M_PI, 0.0, 1.0, 0.0);
 		drawCircle(1.0, true);
@@ -326,14 +336,19 @@ void CubeScene::draw()
 
 	drawPlayer();
 
+	glDisable(GL_LIGHTING);
 	BOOST_FOREACH(boost::shared_ptr<Stone> stoneptr, _stones)
 	{
 		Vector3 pos = _path.positionAt(stoneptr->x());
+		float angle = _path.angleAt(stoneptr->x());
 		glPushMatrix();
 			glTranslatef(pos.x, pos.y, stoneptr->y());
-			drawCircle(stoneptr->radius(), false);
+			glRotatef(angle, 0.0, 0.0, 1.0);
+			glRotatef(-stoneptr->angle() * 180 / M_PI, 0.0, 1.0, 0.0);
+			drawCircle(stoneptr->radius(), true);
 		glPopMatrix();
 	}
+	glEnable(GL_LIGHTING);
 }
 
 void CubeScene::updateArrowDirection(unsigned int key, int value)

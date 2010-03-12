@@ -1,12 +1,12 @@
 #include "stone.hpp"
 
-Stone::Stone(cpSpace* space, float x)
+Stone::Stone(cpSpace* space, float x, float radius)
 {
-	_body = cpSpaceAddBody(space, cpBodyNew(100.0, 200.0));
+	_body = cpSpaceAddBody(space, cpBodyNew(5.0, 0.5));
 	_body->p = cpv(x, 100);
-	_shape = cpSpaceAddShape(space, cpCircleShapeNew(_body, 0.2, cpvzero));
-	_shape->e = 0.1;
-	_shape->u = 0.8;
+	_shape = cpSpaceAddShape(space, cpCircleShapeNew(_body, radius, cpvzero));
+	_shape->e = 0.0;
+	_shape->u = 2.0;
 }
 
 Stone::~Stone()
