@@ -12,7 +12,7 @@ class Stone
 		float x() const { return _body->p.x; }
 		float y() const { return _body->p.y; }
 		float radius() const { return cpCircleShapeGetRadius(_shape); }
-		float angle() const { return _body->p.y; }
+		float angle() const { return _body->a; }
 
 	private:
 		cpBody* _body;
